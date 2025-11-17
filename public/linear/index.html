@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRMNL Linear Plugin</title>
+    <title>Linear Plugin · TRMNL</title>
     <style>
         * {
             margin: 0;
@@ -12,216 +12,297 @@
         }
         
         body {
-            font-family: 'Courier New', 'Courier', monospace;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #fff;
-            background: #000;
-            padding: 20px;
-            max-width: 900px;
+            color: #000;
+            background: #fff;
+            padding: 40px 20px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
         h1 {
-            font-size: 1.5em;
-            margin: 20px 0 10px 0;
-            color: #fff;
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
         }
         
         h2 {
-            font-size: 1.2em;
-            margin: 30px 0 10px 0;
-            color: #ccc;
+            font-size: 1.5em;
+            font-weight: 400;
+            margin: 50px 0 20px 0;
+            letter-spacing: -0.3px;
+        }
+        
+        h3 {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin: 25px 0 10px 0;
         }
         
         p, li {
             margin: 10px 0;
+            color: #333;
         }
         
         a {
-            color: #fff;
-            text-decoration: underline;
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
         }
         
         a:hover {
-            color: #ccc;
+            opacity: 0.6;
         }
         
-        .comment {
-            color: #666;
-        }
-        
-        .key {
-            color: #ddd;
-        }
-        
-        .string {
-            color: #aaa;
-        }
-        
-        code {
-            color: #fff;
-        }
-        
-        pre {
-            background: #111;
-            padding: 15px;
-            margin: 10px 0;
-            overflow-x: auto;
-            border: 1px solid #333;
-            position: relative;
-        }
-        
-        ul, ol {
-            margin-left: 20px;
-        }
-        
-        hr {
-            border: none;
-            border-top: 1px solid #333;
-            margin: 30px 0;
+        .header {
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .header-logos {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333;
         }
         
         .header-logos svg {
-            height: 40px;
+            height: 35px;
             width: auto;
         }
         
         .logo-separator {
-            color: #666;
-            font-size: 2em;
+            color: #ccc;
+            font-size: 1.5em;
+            font-weight: 300;
         }
         
-        .copy-container {
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            font-weight: 300;
+        }
+        
+        .config-section {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .config-item {
+            margin: 25px 0;
+        }
+        
+        .config-label {
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+        }
+        
+        .config-value {
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
             position: relative;
         }
         
         .copy-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #333;
-            color: #fff;
-            border: 1px solid #666;
-            padding: 5px 10px;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            color: #000;
+            border: 1px solid #d0d0d0;
+            padding: 6px 12px;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .copy-btn:hover {
-            background: #444;
+            background: #000;
+            color: #fff;
+            border-color: #000;
         }
         
         .copy-btn.copied {
-            background: #0f0;
-            color: #000;
+            background: #000;
+            color: #fff;
+            border-color: #000;
         }
         
-        .liquid-code {
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        .liquid-template {
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
             max-height: 400px;
             overflow-y: auto;
+            position: relative;
+            margin-top: 10px;
+        }
+        
+        ol {
+            margin-left: 20px;
+            counter-reset: item;
+            list-style: none;
+        }
+        
+        ol li {
+            counter-increment: item;
+            margin: 15px 0;
+        }
+        
+        ol li:before {
+            content: counter(item) ".";
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #666;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        footer a {
+            color: #666;
+            border-bottom: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
 
-<div class="header-logos">
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" width="200" height="200" viewBox="0 0 100 100">
-    <path fill="#fff" d="M1.22541 61.5228c-.2225-.9485.90748-1.5459 1.59638-.857L39.3342 97.1782c.6889.6889.0915 1.8189-.857 1.5964C20.0515 94.4522 5.54779 79.9485 1.22541 61.5228ZM.00189135 46.8891c-.01764375.2833.08887215.5599.28957165.7606L52.3503 99.7085c.2007.2007.4773.3075.7606.2896 2.3692-.1476 4.6938-.46 6.9624-.9259.7645-.157 1.0301-1.0963.4782-1.6481L2.57595 39.4485c-.55186-.5519-1.49117-.2863-1.648174.4782-.465915 2.2686-.77832 4.5932-.92588465 6.9624ZM4.21093 29.7054c-.16649.3738-.08169.8106.20765 1.1l64.77602 64.776c.2894.2894.7262.3742 1.1.2077 1.7861-.7956 3.5171-1.6927 5.1855-2.684.5521-.328.6373-1.0867.1832-1.5407L8.43566 24.3367c-.45409-.4541-1.21271-.3689-1.54074.1832-.99132 1.6684-1.88843 3.3994-2.68399 5.1855ZM12.6587 18.074c-.3701-.3701-.393-.9637-.0443-1.3541C21.7795 6.45931 35.1114 0 49.9519 0 77.5927 0 100 22.4073 100 50.0481c0 14.8405-6.4593 28.1724-16.7199 37.3375-.3903.3487-.984.3258-1.3542-.0443L12.6587 18.074Z"/>
-  </svg>
-  <span class="logo-separator">×</span>
-  <svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path fill="#fff" d="M63.6 31.8c-.7 0-1.4-.3-1.8-.7l-2.5-2.5c-.5-.5-.7-1.1-.7-1.8s.3-1.4.7-1.8l2.5-2.5c.5-.5 1.1-.7 1.8-.7.7 0 1.4.3 1.8.7l2.5 2.5c.5.5.7 1.1.7 1.8s-.3 1.4-.7 1.8l-2.5 2.5c-.5.5-1.1.7-1.8.7M46.8 33.8c.7 0 1.4-.3 1.8-.7L71.2 10c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8c-.5-.5-1.1-.7-1.8-.7H60.3c-.7 0-1.4.3-1.8.7L37.2 29.5c-1.1 1-1.1 2.7 0 3.8.2.2.7.5 1.3.5zM8.1 84.3l25.2-26.6-3.6-3.6L3.1 79.3c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8l2.5 2.5c.4.3 1.1.6 1.7.6s1.3-.2 1.8-.7M12.4 53.9c-.7 0-1.4-.3-1.8-.7L8.1 50.7c-.5-.5-.7-1.1-.7-1.8s.3-1.4.7-1.8l23.1-23.1c.5-.5 1.1-.7 1.8-.7s1.4.3 1.8.7l2.5 2.5c1 1 1 2.6 0 3.6L14.2 53.2c-.4.5-1 .7-1.8.7M88.2 31.1c.7 0 1.4-.3 1.8-.7l2.5-2.5c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8l-2.5-2.5c-.5-.5-1.1-.7-1.8-.7s-1.4.3-1.8.7L63.3 45.1c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8l2.5 2.5c.5.5 1.1.7 1.8.7s1.4-.3 1.8-.7L86.4 34c.5-.5 1.1-.7 1.8-.7"/>
-    <path fill="#fff" d="M88.2 62.4c.7 0 1.4-.3 1.8-.7l2.5-2.5c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8L70.9 33.9c-.5-.5-1.1-.7-1.8-.7s-1.4.3-1.8.7l-2.5 2.5c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8L86.4 61.7c.5.5 1.1.7 1.8.7"/>
-  </svg>
+<a href="/" class="back-link">← Back to all plugins</a>
+
+<div class="header">
+  <div class="header-logos">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" width="200" height="200" viewBox="0 0 100 100">
+      <path fill="#000" d="M1.22541 61.5228c-.2225-.9485.90748-1.5459 1.59638-.857L39.3342 97.1782c.6889.6889.0915 1.8189-.857 1.5964C20.0515 94.4522 5.54779 79.9485 1.22541 61.5228ZM.00189135 46.8891c-.01764375.2833.08887215.5599.28957165.7606L52.3503 99.7085c.2007.2007.4773.3075.7606.2896 2.3692-.1476 4.6938-.46 6.9624-.9259.7645-.157 1.0301-1.0963.4782-1.6481L2.57595 39.4485c-.55186-.5519-1.49117-.2863-1.648174.4782-.465915 2.2686-.77832 4.5932-.92588465 6.9624ZM4.21093 29.7054c-.16649.3738-.08169.8106.20765 1.1l64.77602 64.776c.2894.2894.7262.3742 1.1.2077 1.7861-.7956 3.5171-1.6927 5.1855-2.684.5521-.328.6373-1.0867.1832-1.5407L8.43566 24.3367c-.45409-.4541-1.21271-.3689-1.54074.1832-.99132 1.6684-1.88843 3.3994-2.68399 5.1855ZM12.6587 18.074c-.3701-.3701-.393-.9637-.0443-1.3541C21.7795 6.45931 35.1114 0 49.9519 0 77.5927 0 100 22.4073 100 50.0481c0 14.8405-6.4593 28.1724-16.7199 37.3375-.3903.3487-.984.3258-1.3542-.0443L12.6587 18.074Z"/>
+    </svg>
+    <span class="logo-separator">×</span>
+    <svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#000" d="M63.6 31.8c-.7 0-1.4-.3-1.8-.7l-2.5-2.5c-.5-.5-.7-1.1-.7-1.8s.3-1.4.7-1.8l2.5-2.5c.5-.5 1.1-.7 1.8-.7.7 0 1.4.3 1.8.7l2.5 2.5c.5.5.7 1.1.7 1.8s-.3 1.4-.7 1.8l-2.5 2.5c-.5.5-1.1.7-1.8.7M46.8 33.8c.7 0 1.4-.3 1.8-.7L71.2 10c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8c-.5-.5-1.1-.7-1.8-.7H60.3c-.7 0-1.4.3-1.8.7L37.2 29.5c-1.1 1-1.1 2.7 0 3.8.2.2.7.5 1.3.5zM8.1 84.3l25.2-26.6-3.6-3.6L3.1 79.3c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8l2.5 2.5c.4.3 1.1.6 1.7.6s1.3-.2 1.8-.7M12.4 53.9c-.7 0-1.4-.3-1.8-.7L8.1 50.7c-.5-.5-.7-1.1-.7-1.8s.3-1.4.7-1.8l23.1-23.1c.5-.5 1.1-.7 1.8-.7s1.4.3 1.8.7l2.5 2.5c1 1 1 2.6 0 3.6L14.2 53.2c-.4.5-1 .7-1.8.7M88.2 31.1c.7 0 1.4-.3 1.8-.7l2.5-2.5c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8l-2.5-2.5c-.5-.5-1.1-.7-1.8-.7s-1.4.3-1.8.7L63.3 45.1c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8l2.5 2.5c.5.5 1.1.7 1.8.7s1.4-.3 1.8-.7L86.4 34c.5-.5 1.1-.7 1.8-.7"/>
+      <path fill="#000" d="M88.2 62.4c.7 0 1.4-.3 1.8-.7l2.5-2.5c.5-.5.7-1.1.7-1.8s-.3-1.4-.7-1.8L70.9 33.9c-.5-.5-1.1-.7-1.8-.7s-1.4.3-1.8.7l-2.5 2.5c-.5.5-.7 1.1-.7 1.8s.3 1.4.7 1.8L86.4 61.7c.5.5 1.1.7 1.8.7"/>
+    </svg>
+  </div>
+  
+  <h1>Linear Issues Plugin</h1>
+  <p class="subtitle">Display your Linear issues from current and past cycles on your TRMNL display</p>
 </div>
 
-<pre>
-<span class="comment">/**
- * TRMNL Linear Plugin
- * Display your Linear issues on TRMNL - issues from current cycle and earlier
- * https://github.com/joshsorenson/trml-plugins
- */</span>
-
-<span class="key">const</span> plugin = {
-  <span class="key">name</span>: <span class="string">"Linear Issues - Current Cycle"</span>,
-  <span class="key">endpoint</span>: <span class="string">"https://trml-plugins.vercel.app/api/linear-issues"</span>,
-  <span class="key">repo</span>: <span class="string">"https://github.com/joshsorenson/trml-plugins"</span>
-};
-</pre>
-
-<h1>// Quick Start</h1>
+<h2>Quick Start</h2>
 <ol>
-  <li>Get your Linear API key: <a href="https://linear.app/settings/api" target="_blank">linear.app/settings/api</a></li>
-  <li>Create plugin: <a href="https://usetrmnl.com/plugins" target="_blank">usetrmnl.com/plugins</a></li>
-  <li>Configure using settings below (click copy buttons)</li>
+  <li>Get your Linear API key from <a href="https://linear.app/settings/api" target="_blank">linear.app/settings/api</a></li>
+  <li>Create a new plugin at <a href="https://usetrmnl.com/plugins" target="_blank">usetrmnl.com/plugins</a></li>
+  <li>Copy the configuration values below</li>
   <li>Copy and paste the markup template</li>
-  <li>Activate!</li>
+  <li>Save and activate your plugin</li>
 </ol>
 
-<hr>
+<h2>Plugin Configuration</h2>
 
-<h1>// TRMNL Configuration</h1>
+<div class="config-section">
+  <div class="config-item">
+    <div class="config-label">Strategy</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('Polling', this)">Copy</button>
+      Polling
+    </div>
+  </div>
 
-<h2>Strategy:</h2>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('Polling', this)">copy</button>
-  <pre>Polling</pre>
+  <div class="config-item">
+    <div class="config-label">Polling URL</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('https://trml-plugins.vercel.app/api/linear-issues', this)">Copy</button>
+      https://trml-plugins.vercel.app/api/linear-issues
+    </div>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Polling Verb</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('GET', this)">Copy</button>
+      GET
+    </div>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Polling Headers</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE', this)">Copy</button>
+      X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE
+    </div>
+    <p class="note">Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</p>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Polling Body</div>
+    <div class="config-value">
+      (leave empty)
+    </div>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Form Fields</div>
+    <div class="config-value">
+      (leave empty)
+    </div>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Remove Bleed Margin</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('No', this)">Copy</button>
+      No
+    </div>
+  </div>
+
+  <div class="config-item">
+    <div class="config-label">Enable Dark Mode</div>
+    <div class="config-value">
+      <button class="copy-btn" onclick="copyToClipboard('No', this)">Copy</button>
+      No
+    </div>
+    <p class="note">Optional — choose based on your preference</p>
+  </div>
 </div>
 
-<h2>Polling URL(s):</h2>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('https://trml-plugins.vercel.app/api/linear-issues', this)">copy</button>
-  <pre>https://trml-plugins.vercel.app/api/linear-issues</pre>
-</div>
+<h2>Markup Template</h2>
+<p>Copy this template and paste it into TRMNL's markup editor:</p>
 
-<h2>Polling Verb:</h2>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('GET', this)">copy</button>
-  <pre>GET</pre>
-</div>
-
-<h2>Polling Headers:</h2>
-<p class="comment">Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</p>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE', this)">copy</button>
-  <pre>X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE</pre>
-</div>
-
-<h2>Polling Body:</h2>
-<pre>(leave empty)</pre>
-
-<h2>Form Fields:</h2>
-<pre>(leave empty)</pre>
-
-<h2>Remove bleed margin?</h2>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('No', this)">copy</button>
-  <pre>No</pre>
-</div>
-
-<h2>Enable Dark Mode?</h2>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('No', this)">copy</button>
-  <pre>No  <span class="comment">// optional - your preference</span></pre>
-</div>
-
-<hr>
-
-<h1>// Markup Template (linear.liquid)</h1>
-<p>Copy this entire template and paste into TRMNL's markup editor:</p>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyLiquidTemplate(this)">copy all</button>
-  <pre class="liquid-code" id="liquid-template">{% comment %}
+<div style="position: relative;">
+  <button class="copy-btn" style="position: absolute; top: 15px; right: 15px; z-index: 10;" onclick="copyLiquidTemplate(this)">Copy All</button>
+  <pre class="liquid-template" id="liquid-template">{% comment %}
 TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
 {% endcomment %}
@@ -360,38 +441,35 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
 &lt;/script&gt;</pre>
 </div>
 
-<hr>
-
-<h1>// Test Your Setup</h1>
-<div class="copy-container">
-  <button class="copy-btn" onclick="copyToClipboard('curl -H &quot;X-Linear-API-Key: YOUR_LINEAR_API_KEY&quot; https://trml-plugins.vercel.app/api/linear-issues', this)">copy</button>
-  <pre>curl -H "X-Linear-API-Key: YOUR_LINEAR_API_KEY" \
-  https://trml-plugins.vercel.app/api/linear-issues</pre>
-</div>
-
-<hr>
-
-<h1>// Features</h1>
-<ul>
-  <li>Shows issues from current cycle and earlier</li>
-  <li>Priority badges for urgent/high priority items</li>
-  <li>Cycle status indicators (●current ◄past ►future)</li>
-  <li>Sorted by cycle then priority</li>
-  <li>Clean sans-serif typography</li>
-  <li>E-ink optimized display</li>
+<h2>Features</h2>
+<ul style="list-style: none; margin-left: 0;">
+  <li style="margin: 15px 0;">• Shows issues from current and past cycles</li>
+  <li style="margin: 15px 0;">• Priority badges for urgent and high-priority items</li>
+  <li style="margin: 15px 0;">• Cycle status indicators (● current, ◄ past, ► future)</li>
+  <li style="margin: 15px 0;">• Smart sorting by cycle number and priority</li>
+  <li style="margin: 15px 0;">• Clean typography optimized for e-ink displays</li>
+  <li style="margin: 15px 0;">• Auto-refreshes every 15 minutes</li>
 </ul>
 
-<hr>
-
-<p class="comment">// Built for <a href="https://usetrmnl.com" target="_blank">TRMNL</a> • Using <a href="https://linear.app" target="_blank">Linear</a> API • MIT License</p>
+<footer>
+  <p>
+    <a href="/" class="back-link">← Back to all plugins</a>
+  </p>
+  <p style="margin-top: 20px;">
+    <a href="https://github.com/joshsorenson/trml-plugins" target="_blank">GitHub</a> ·
+    <a href="https://usetrmnl.com" target="_blank">TRMNL</a> ·
+    <a href="https://linear.app" target="_blank">Linear</a>
+  </p>
+  <p style="margin-top: 10px;">MIT License</p>
+</footer>
 
 <script>
 function copyToClipboard(text, button) {
   navigator.clipboard.writeText(text).then(() => {
-    button.textContent = 'copied!';
+    button.textContent = 'Copied!';
     button.classList.add('copied');
     setTimeout(() => {
-      button.textContent = 'copy';
+      button.textContent = 'Copy';
       button.classList.remove('copied');
     }, 2000);
   });
@@ -399,7 +477,6 @@ function copyToClipboard(text, button) {
 
 function copyLiquidTemplate(button) {
   const template = document.getElementById('liquid-template').textContent;
-  // Decode HTML entities
   const decoded = template
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -407,10 +484,10 @@ function copyLiquidTemplate(button) {
     .replace(/&amp;/g, '&');
   
   navigator.clipboard.writeText(decoded).then(() => {
-    button.textContent = 'copied!';
+    button.textContent = 'Copied!';
     button.classList.add('copied');
     setTimeout(() => {
-      button.textContent = 'copy all';
+      button.textContent = 'Copy All';
       button.classList.remove('copied');
     }, 2000);
   });
