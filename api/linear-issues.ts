@@ -15,12 +15,10 @@ interface LinearIssue {
 }
 
 interface TRMNLResponse {
-  merge_variables: {
-    issues: LinearIssue[];
-    total_count: number;
-    updated_at: string;
-    user_name: string;
-  };
+  issues: LinearIssue[];
+  total_count: number;
+  updated_at: string;
+  user_name: string;
 }
 
 /**
@@ -139,13 +137,12 @@ export default async function handler(
     // Sort by priority (1 = Urgent, 4 = Low)
     filteredIssues.sort((a, b) => a.priority - b.priority);
 
-    const response: TRMNLResponse = {
-      merge_variables: {
-        issues: filteredIssues,
-        total_count: filteredIssues.length,
-        updated_at: new Date().toISOString(),
-        user_name: userName,
-      },
+    // Return data at root level for TRMNL (not wrapped in merge_variables)
+    const response = {
+      issues: filteredIssues,
+      total_count: filteredIssues.length,
+      updated_at: new Date().toISOString(),
+      user_name: userName,
     };
 
     // Set cache headers (refresh every 15 minutes)
