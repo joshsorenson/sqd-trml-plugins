@@ -94,7 +94,6 @@ export default async function handler(
           type: { nin: ['completed', 'canceled'] },
         },
       },
-      orderBy: 'priority',
     });
 
     const issuesList = await issues.nodes;
@@ -103,7 +102,8 @@ export default async function handler(
     const filteredIssues: LinearIssue[] = [];
 
     for (const issue of issuesList) {
-      const cycleId = issue.cycleId;
+      const cycle = await issue.cycle;
+      const cycleId = cycle?.id;
 
       // Include issues that:
       // 1. Have a cycle and it's current or earlier (based on cycle number)
@@ -119,6 +119,7 @@ export default async function handler(
         const state = await issue.state;
         const labels = await issue.labels();
         const labelsList = await labels.nodes;
+        const cycleNumber = cycle?.number;
 
         filteredIssues.push({
           id: issue.id,
@@ -128,7 +129,7 @@ export default async function handler(
           priorityLabel: issue.priorityLabel,
           status: state?.name || 'No Status',
           url: issue.url,
-          cycleNumber: cycleId ? currentCycleMap.get(cycleId) : undefined,
+          cycleNumber: cycleNumber,
           dueDate: issue.dueDate?.toString(),
           labels: labelsList.map((label: { name: string }) => label.name),
         });
