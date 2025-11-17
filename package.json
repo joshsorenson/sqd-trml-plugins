@@ -4,8 +4,7 @@
   "description": "TRMNL plugin to display Linear issues due in current cycle or earlier",
   "main": "api/linear-issues.ts",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "vercel build"
+    "dev": "vercel dev"
   },
   "dependencies": {
     "@linear/sdk": "^37.0.0"
