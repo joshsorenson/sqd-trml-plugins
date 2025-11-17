@@ -144,8 +144,14 @@ export default async function handler(
         return cycleA - cycleB;
       }
       
-      // If same cycle, sort by priority (1 = Urgent first, 4 = Low last)
-      return a.priority - b.priority;
+      // If same cycle, sort by priority
+      // Priority 0 = No priority (should be last)
+      // Priority 1 = Urgent (should be first)
+      // Priority 2 = High, 3 = Normal, 4 = Low
+      const priorityA = a.priority === 0 ? 999 : a.priority;
+      const priorityB = b.priority === 0 ? 999 : b.priority;
+      
+      return priorityA - priorityB;
     });
 
     // Return data at root level for TRMNL (not wrapped in merge_variables)
