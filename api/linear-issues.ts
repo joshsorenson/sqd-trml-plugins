@@ -134,8 +134,19 @@ export default async function handler(
       }
     }
 
-    // Sort by priority (1 = Urgent, 4 = Low)
-    filteredIssues.sort((a, b) => a.priority - b.priority);
+    // Sort by cycle number (lower/earlier first), then by priority (urgent first)
+    filteredIssues.sort((a, b) => {
+      // First, sort by cycle number (lower cycles first)
+      const cycleA = a.cycleNumber || 999; // Issues without cycles go to bottom
+      const cycleB = b.cycleNumber || 999;
+      
+      if (cycleA !== cycleB) {
+        return cycleA - cycleB;
+      }
+      
+      // If same cycle, sort by priority (1 = Urgent first, 4 = Low last)
+      return a.priority - b.priority;
+    });
 
     // Return data at root level for TRMNL (not wrapped in merge_variables)
     const response = {
