@@ -3,244 +3,60 @@ TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
 {% endcomment %}
 
-<div class="linear-issues">
-  <div class="header">
-    <h1>📋 My Linear Issues</h1>
-    {% if user_name %}
-    <p class="user-name">{{ user_name }}</p>
-    {% endif %}
-  </div>
+<h1>My Linear Issues</h1>
+{% if user_name %}
+<p>{{ user_name }}</p>
+{% endif %}
+<hr>
 
-  {% if total_count > 0 %}
-    <div class="issue-count">
-      <p>{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} due</p>
+{% if total_count > 0 %}
+  <p><strong>{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} due</strong></p>
+  
+  {% for issue in issues limit: 8 %}
+    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ccc;">
+      <p style="margin: 0 0 5px 0;">
+        <strong>{{ issue.identifier }}</strong> - {{ issue.priorityLabel }}
+      </p>
+      <p style="margin: 0 0 8px 0; font-size: 18px;">
+        <strong>{{ issue.title }}</strong>
+      </p>
+      <p style="margin: 0; font-size: 14px;">
+        {{ issue.status }}
+        {% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}
+      </p>
     </div>
-
-    <div class="issues-list">
-      {% for issue in issues limit: 10 %}
-        <div class="issue-item priority-{{ issue.priority }}">
-          <div class="issue-header">
-            <span class="issue-id">{{ issue.identifier }}</span>
-            <span class="priority-badge">{{ issue.priorityLabel }}</span>
-          </div>
-          
-          <h2 class="issue-title">{{ issue.title }}</h2>
-          
-          <div class="issue-meta">
-            <span class="status">{{ issue.status }}</span>
-            {% if issue.cycleNumber %}
-              <span class="cycle">Cycle #{{ issue.cycleNumber }}</span>
-            {% endif %}
-            {% if issue.dueDate %}
-              <span class="due-date">Due: {{ issue.dueDate | date: "%b %d" }}</span>
-            {% endif %}
-          </div>
-
-          {% if issue.labels.size > 0 %}
-            <div class="labels">
-              {% for label in issue.labels limit: 3 %}
-                <span class="label">{{ label }}</span>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-
-    {% if total_count > 10 %}
-      <div class="more-issues">
-        <p>+ {{ total_count | minus: 10 }} more issue{% if total_count | minus: 10 > 1 %}s{% endif %}</p>
-      </div>
-    {% endif %}
-  {% else %}
-    <div class="no-issues">
-      <p>✨ No issues due in current cycle</p>
-      <p class="subtitle">Great job staying on top of things!</p>
-    </div>
+  {% endfor %}
+  
+  {% if total_count > 8 %}
+    <p><em>+ {{ total_count | minus: 8 }} more issue{% if total_count | minus: 8 > 1 %}s{% endif %}</em></p>
   {% endif %}
+{% else %}
+  <p style="text-align: center; margin: 40px 0;">No issues due in current cycle</p>
+  <p style="text-align: center;">Great job staying on top of things!</p>
+{% endif %}
 
-  <div class="footer">
-    <p class="updated">Updated: {{ updated_at | date: "%I:%M %p" }}</p>
-  </div>
-</div>
+<hr>
+<p style="font-size: 12px; text-align: center;">Updated: {{ updated_at | date: "%I:%M %p" }}</p>
 
 <style>
-  .linear-issues {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  body {
+    font-family: Arial, sans-serif;
     padding: 20px;
-    max-width: 800px;
   }
-
-  .header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid #000;
-    padding-bottom: 10px;
+  
+  h1 {
+    font-size: 28px;
+    margin: 0 0 10px 0;
   }
-
-  .header h1 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0 0 5px 0;
+  
+  hr {
+    border: none;
+    border-top: 2px solid #000;
+    margin: 15px 0;
   }
-
-  .user-name {
-    font-size: 14px;
-    color: #666;
-    margin: 0;
-  }
-
-  .issue-count {
-    margin-bottom: 15px;
-  }
-
-  .issue-count p {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .issues-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .issue-item {
-    border: 2px solid #e0e0e0;
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .issue-item.priority-1 {
-    border-left: 4px solid #ff0000;
-  }
-
-  .issue-item.priority-2 {
-    border-left: 4px solid #ff9500;
-  }
-
-  .issue-item.priority-3 {
-    border-left: 4px solid #007aff;
-  }
-
-  .issue-item.priority-4 {
-    border-left: 4px solid #999;
-  }
-
-  .issue-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .issue-id {
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    font-weight: bold;
-    color: #666;
-  }
-
-  .priority-badge {
-    font-size: 11px;
-    text-transform: uppercase;
-    font-weight: 600;
-    padding: 2px 6px;
-    background: #f0f0f0;
-    border-radius: 4px;
-  }
-
-  .issue-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-    line-height: 1.3;
-  }
-
-  .issue-meta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
-  }
-
-  .issue-meta span {
-    font-size: 12px;
-    color: #666;
-  }
-
-  .status {
-    padding: 2px 8px;
-    background: #e8f5e9;
-    border-radius: 4px;
-  }
-
-  .cycle {
-    padding: 2px 8px;
-    background: #e3f2fd;
-    border-radius: 4px;
-  }
-
-  .due-date {
-    padding: 2px 8px;
-    background: #fff3e0;
-    border-radius: 4px;
-  }
-
-  .labels {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .label {
-    font-size: 11px;
-    padding: 2px 6px;
-    background: #f5f5f5;
-    border-radius: 4px;
-    color: #555;
-  }
-
-  .no-issues {
-    text-align: center;
-    padding: 40px 20px;
-  }
-
-  .no-issues p {
-    font-size: 18px;
+  
+  p {
     margin: 5px 0;
-  }
-
-  .no-issues .subtitle {
-    font-size: 14px;
-    color: #666;
-  }
-
-  .more-issues {
-    text-align: center;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #e0e0e0;
-  }
-
-  .more-issues p {
-    font-size: 14px;
-    color: #666;
-    font-style: italic;
-    margin: 0;
-  }
-
-  .footer {
-    margin-top: 20px;
-    padding-top: 10px;
-    border-top: 1px solid #e0e0e0;
-    text-align: center;
-  }
-
-  .updated {
-    font-size: 11px;
-    color: #999;
-    margin: 0;
   }
 </style>
 
