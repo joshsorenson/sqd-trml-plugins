@@ -102,7 +102,20 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
           <span class="label label--small">{{ issue.status }}</span>
         </td>
         <td>
-          <span class="cycle-badge">{% if issue.cycleNumber %}#{{ issue.cycleNumber }}{% else %}-{% endif %}</span>
+          <span class="cycle-badge">
+            {% if issue.cycleNumber %}
+              #{{ issue.cycleNumber }}
+              {% if issue.cycleStatus == 'current' %}
+                <small>●</small>
+              {% elsif issue.cycleStatus == 'past' %}
+                <small>◄</small>
+              {% elsif issue.cycleStatus == 'future' %}
+                <small>►</small>
+              {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </span>
         </td>
       </tr>
       {% endfor %}

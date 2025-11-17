@@ -10,6 +10,7 @@ interface LinearIssue {
   status: string;
   url: string;
   cycleNumber?: number;
+  cycleStatus?: 'current' | 'past' | 'future';
   dueDate?: string;
   labels: string[];
 }
@@ -66,20 +67,35 @@ export default async function handler(
     const teams = await client.teams();
     const teamsList = await teams.nodes;
 
-    // Map to store current cycle IDs and their cycle numbers
-    const currentCycleMap = new Map<string, number>();
+    // Map to store cycle IDs and their info (number and current status)
+    const cycleInfoMap = new Map<string, { number: number; isCurrent: boolean }>();
+    const currentCycleNumbers = new Map<string, number>(); // team ID -> current cycle number
 
-    // Fetch current cycles for all teams
+    // Fetch cycles for all teams
     for (const team of teamsList) {
-      const cycles = await team.cycles({
+      // Get active (current) cycle
+      const activeCycles = await team.cycles({
         filter: {
           isActive: { eq: true },
         },
       });
-      const cyclesList = await cycles.nodes;
+      const activeCyclesList = await activeCycles.nodes;
+      
+      if (activeCyclesList.length > 0) {
+        const currentCycle = activeCyclesList[0];
+        currentCycleNumbers.set(team.id, currentCycle.number);
+      }
 
-      for (const cycle of cyclesList) {
-        currentCycleMap.set(cycle.id, cycle.number);
+      // Get all cycles to map them
+      const allCycles = await team.cycles();
+      const allCyclesList = await allCycles.nodes;
+
+      for (const cycle of allCyclesList) {
+        const isCurrent = activeCyclesList.some(ac => ac.id === cycle.id);
+        cycleInfoMap.set(cycle.id, { 
+          number: cycle.number, 
+          isCurrent 
+        });
       }
     }
 
@@ -102,22 +118,29 @@ export default async function handler(
     for (const issue of issuesList) {
       const cycle = await issue.cycle;
       const cycleId = cycle?.id;
+      const cycleInfo = cycleId ? cycleInfoMap.get(cycleId) : undefined;
 
       // Include issues that:
-      // 1. Have a cycle and it's current or earlier (based on cycle number)
-      // 2. OR have no cycle (backlog items)
-      const shouldInclude =
-        cycleId && currentCycleMap.has(cycleId)
-          ? true // Include if in current cycle
-          : !cycleId
-          ? false // Exclude backlog items without cycles
-          : true; // Include if in an earlier cycle
+      // 1. Have a cycle and it's current or earlier
+      // 2. Exclude backlog items without cycles
+      const shouldInclude = cycleInfo !== undefined;
 
-      if (shouldInclude) {
+      if (shouldInclude && cycleInfo) {
         const state = await issue.state;
         const labels = await issue.labels();
         const labelsList = await labels.nodes;
-        const cycleNumber = cycle?.number;
+        const team = await issue.team;
+        const currentCycleNumber = currentCycleNumbers.get(team.id);
+
+        // Determine cycle status
+        let cycleStatus: 'current' | 'past' | 'future' = 'current';
+        if (cycleInfo.isCurrent) {
+          cycleStatus = 'current';
+        } else if (currentCycleNumber && cycleInfo.number < currentCycleNumber) {
+          cycleStatus = 'past';
+        } else if (currentCycleNumber && cycleInfo.number > currentCycleNumber) {
+          cycleStatus = 'future';
+        }
 
         filteredIssues.push({
           id: issue.id,
@@ -127,7 +150,8 @@ export default async function handler(
           priorityLabel: issue.priorityLabel,
           status: state?.name || 'No Status',
           url: issue.url,
-          cycleNumber: cycleNumber,
+          cycleNumber: cycleInfo.number,
+          cycleStatus: cycleStatus,
           dueDate: issue.dueDate?.toString(),
           labels: labelsList.map((label: { name: string }) => label.name),
         });
