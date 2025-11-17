@@ -170,9 +170,9 @@
             <h2>🚀 Quick Start</h2>
             <ol style="padding-left: 20px;">
                 <li style="margin: 10px 0;">Get your Linear API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a></li>
-                <li style="margin: 10px 0;">Add this plugin to your TRMNL dashboard</li>
-                <li style="margin: 10px 0;">Configure the <code>X-Linear-API-Key</code> header with your API key</li>
-                <li style="margin: 10px 0;">Activate and enjoy!</li>
+                <li style="margin: 10px 0;">Go to <a href="https://usetrmnl.com/plugins" target="_blank">TRMNL Plugins</a> and create a new private plugin</li>
+                <li style="margin: 10px 0;">Configure the plugin using the settings below</li>
+                <li style="margin: 10px 0;">Upload the markup template and activate!</li>
             </ol>
         </div>
         
@@ -189,21 +189,71 @@
         </div>
         
         <div class="section">
-            <h2>🔌 API Endpoint</h2>
-            <div class="endpoint">
-                <strong>Polling URL:</strong><br>
-                <code id="api-endpoint">https://trml-plugins.vercel.app/api/linear-issues</code>
+            <h2>⚙️ TRMNL Plugin Configuration</h2>
+            <p style="margin-bottom: 20px;">When creating your plugin in TRMNL, use these settings:</p>
+            
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Strategy:</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">Polling</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Polling URL(s):</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">https://trml-plugins.vercel.app/api/linear-issues</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Polling Verb:</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">GET</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Polling Headers:</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE</div>
+                    <small style="color: #666;">Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</small>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Polling Body:</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">(leave empty)</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Form Fields:</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">(leave empty)</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Remove bleed margin?</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">No</div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <strong style="color: #667eea;">Enable Dark Mode?</strong><br>
+                    <div class="code-block" style="margin: 5px 0;">No (optional - your preference)</div>
+                </div>
             </div>
             
             <div class="warning">
-                <strong>⚠️ Authentication Required</strong><br>
-                You must include your Linear API key in the <code>X-Linear-API-Key</code> header when configuring this plugin in TRMNL.
+                <strong>⚠️ Important:</strong><br>
+                Make sure to replace <code>YOUR_LINEAR_API_KEY_HERE</code> in the Polling Headers field with your actual Linear API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a>.
             </div>
-            
+        </div>
+        
+        <div class="section">
+            <h2>📄 Markup Template</h2>
+            <p>Download the <code>markup.liquid</code> file from the <a href="https://github.com/joshsorenson/trml-plugins" target="_blank">GitHub repository</a> and upload it to your TRMNL plugin.</p>
+        </div>
+        
+        <div class="section">
+            <h2>🧪 Test Your Configuration</h2>
+            <p style="margin-bottom: 10px;">Test the API endpoint with curl:</p>
             <div class="code-block">
 curl -H "X-Linear-API-Key: YOUR_LINEAR_API_KEY" \<br>
 &nbsp;&nbsp;https://trml-plugins.vercel.app/api/linear-issues
             </div>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">You should receive JSON data with your Linear issues.</p>
         </div>
         
         <div class="section">
