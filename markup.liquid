@@ -3,43 +3,65 @@ TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
 {% endcomment %}
 
-<div class="layout">
-  <div class="columns">
-    <div class="column">
-      {% if total_count > 0 %}
-        <span class="label">{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} in current cycle</span>
-        
-        {% for issue in issues limit: 15 %}
-          <div class="item">
-            <div class="meta">
-              <span class="index">{{ forloop.index }}</span>
-            </div>
-            <div class="content">
-              <span class="title title--small">{{ issue.identifier }}: {{ issue.title }}</span>
-              <span class="description">{{ issue.status }}{% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}</span>
-              <div class="flex gap--xsmall">
-                <span class="label label--small">{{ issue.priorityLabel }}</span>
-                {% for label in issue.labels limit: 2 %}
-                  <span class="label label--small label--underline">{{ label }}</span>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <div class="item">
-          <div class="content">
-            <span class="title">No issues due in current cycle</span>
-            <span class="description">Great job staying on top of things!</span>
-          </div>
-        </div>
-      {% endif %}
-    </div>
-  </div>
+<style>
+  .priority-badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+  .priority-1 { background: #000; }
+  .priority-2 { background: #666; }
+  .priority-3 { background: #999; }
+  .priority-4 { background: #ccc; }
+</style>
+
+<div class="layout layout--top">
+  <table class="table" id="linear-issues">
+    <thead>
+      <tr>
+        <th><span class="title title--small">ID</span></th>
+        <th><span class="title title--small">Title</span></th>
+        <th><span class="title title--small">Status</span></th>
+        <th><span class="title title--small">Cycle</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for issue in issues %}
+      <tr>
+        <td>
+          <span class="label label--small">
+            {% if issue.priority > 0 %}
+              <span class="priority-badge priority-{{ issue.priority }}"></span>
+            {% endif %}
+            {{ issue.identifier }}
+          </span>
+        </td>
+        <td>
+          <span class="label label--small">{{ issue.title | truncate: 50 }}</span>
+        </td>
+        <td>
+          <span class="label label--small">{{ issue.status }}</span>
+        </td>
+        <td>
+          <span class="label label--small">{% if issue.cycleNumber %}#{{ issue.cycleNumber }}{% endif %}</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <div class="title_bar">
   <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
-  <span class="instance">{{ user_name }} | {{ updated_at | date: "%b %d, %I:%M %p" }}</span>
+  <span class="instance">{{ issues | size }} Issues</span>
 </div>
+
+<script>
+  var issues_table = document.querySelector("#linear-issues");
+  if (issues_table.clientHeight >= issues_table.parentNode.clientHeight) {
+    issues_table.classList.add("table--condensed");
+  }
+</script>
 
