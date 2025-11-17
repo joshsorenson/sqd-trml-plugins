@@ -3,60 +3,45 @@ TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
 {% endcomment %}
 
-<h1>My Linear Issues</h1>
-{% if user_name %}
-<p>{{ user_name }}</p>
-{% endif %}
-<hr>
-
-{% if total_count > 0 %}
-  <p><strong>{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} due</strong></p>
-  
-  {% for issue in issues limit: 8 %}
-    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #ccc;">
-      <p style="margin: 0 0 5px 0;">
-        <strong>{{ issue.identifier }}</strong> - {{ issue.priorityLabel }}
-      </p>
-      <p style="margin: 0 0 8px 0; font-size: 18px;">
-        <strong>{{ issue.title }}</strong>
-      </p>
-      <p style="margin: 0; font-size: 14px;">
-        {{ issue.status }}
-        {% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}
-      </p>
+<div class="layout">
+  <div class="columns">
+    <div class="column">
+      <div class="list" data-list-limit="true" data-list-max-height="550" data-list-hidden-count="true" data-list-max-columns="1">
+        {% if total_count > 0 %}
+          <span class="label">{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} in current cycle</span>
+          
+          {% for issue in issues limit: 15 %}
+            <div class="item">
+              <div class="meta">
+                <span class="index">{{ forloop.index }}</span>
+              </div>
+              <div class="content">
+                <span class="title title--small">{{ issue.identifier }}: {{ issue.title }}</span>
+                <span class="description">{{ issue.status }}{% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}</span>
+                <div class="flex gap--xsmall">
+                  <span class="label label--small">{{ issue.priorityLabel }}</span>
+                  {% for label in issue.labels limit: 2 %}
+                    <span class="label label--small label--underline">{{ label }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="item">
+            <div class="content">
+              <span class="title">No issues due in current cycle</span>
+              <span class="description">Great job staying on top of things!</span>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
-  {% endfor %}
-  
-  {% if total_count > 8 %}
-    <p><em>+ {{ total_count | minus: 8 }} more issue{% if total_count | minus: 8 > 1 %}s{% endif %}</em></p>
-  {% endif %}
-{% else %}
-  <p style="text-align: center; margin: 40px 0;">No issues due in current cycle</p>
-  <p style="text-align: center;">Great job staying on top of things!</p>
-{% endif %}
+  </div>
+</div>
 
-<hr>
-<p style="font-size: 12px; text-align: center;">Updated: {{ updated_at | date: "%I:%M %p" }}</p>
-
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  
-  h1 {
-    font-size: 28px;
-    margin: 0 0 10px 0;
-  }
-  
-  hr {
-    border: none;
-    border-top: 2px solid #000;
-    margin: 15px 0;
-  }
-  
-  p {
-    margin: 5px 0;
-  }
-</style>
+<div class="title_bar">
+  <span class="title">My Linear Issues</span>
+  <span class="instance">{% if user_name %}{{ user_name }} | {% endif %}{{ updated_at | date: "%b %d, %I:%M %p" }}</span>
+</div>
 
