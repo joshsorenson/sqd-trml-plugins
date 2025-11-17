@@ -126,7 +126,7 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
 <div class="title_bar">
   <span class="image linear-icon image-stroke"></span>
   <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
-  <span class="instance">{{ issues | size }} Issues</span>
+  <span class="instance">{{ issues | size }} Issues{% if current_cycle %} • Cycle #{{ current_cycle }}{% endif %}</span>
 </div>
 
 <script>

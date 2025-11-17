@@ -18,6 +18,7 @@ interface LinearIssue {
 interface TRMNLResponse {
   issues: LinearIssue[];
   total_count: number;
+  current_cycle?: number;
   updated_at: string;
   user_name: string;
 }
@@ -136,10 +137,10 @@ export default async function handler(
         let cycleStatus: 'current' | 'past' | 'future' = 'current';
         if (cycleInfo.isCurrent) {
           cycleStatus = 'current';
-        } else if (currentCycleNumber && cycleInfo.number < currentCycleNumber) {
-          cycleStatus = 'past';
         } else if (currentCycleNumber && cycleInfo.number > currentCycleNumber) {
           cycleStatus = 'future';
+        } else if (currentCycleNumber && cycleInfo.number < currentCycleNumber) {
+          cycleStatus = 'past';
         }
 
         filteredIssues.push({
@@ -178,10 +179,16 @@ export default async function handler(
       return priorityA - priorityB;
     });
 
+    // Get current cycle number (from first team for simplicity)
+    const currentCycleNum = currentCycleNumbers.size > 0 
+      ? Array.from(currentCycleNumbers.values())[0] 
+      : undefined;
+
     // Return data at root level for TRMNL (not wrapped in merge_variables)
     const response = {
       issues: filteredIssues,
       total_count: filteredIssues.length,
+      current_cycle: currentCycleNum,
       updated_at: new Date().toISOString(),
       user_name: userName,
     };
