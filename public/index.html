@@ -12,260 +12,153 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Courier New', 'Courier', monospace;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: #0f0;
+            background: #000;
             padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            margin: 0 auto;
         }
         
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-        
-        .subtitle {
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        
-        .badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .section {
-            margin: 30px 0;
-        }
-        
-        .section h2 {
             font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #333;
+            margin: 20px 0 10px 0;
+            color: #0f0;
         }
         
-        .feature-list {
-            list-style: none;
-            margin: 20px 0;
-        }
-        
-        .feature-list li {
-            padding: 10px 0;
-            padding-left: 30px;
-            position: relative;
-        }
-        
-        .feature-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
+        h2 {
             font-size: 1.2em;
+            margin: 30px 0 10px 0;
+            color: #0f0;
         }
         
-        .code-block {
-            background: #f5f5f5;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
+        p, li {
+            margin: 10px 0;
         }
         
-        .endpoint {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        
-        .endpoint code {
-            color: #2e7d32;
-            font-weight: 600;
-        }
-        
-        .button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            margin: 10px 10px 10px 0;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .button.secondary {
-            background: #764ba2;
-        }
-        
-        .warning {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        
-        .warning strong {
-            color: #e65100;
-        }
-        
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        footer a {
-            color: #667eea;
+        a {
+            color: #0ff;
             text-decoration: none;
         }
         
-        footer a:hover {
+        a:hover {
             text-decoration: underline;
+        }
+        
+        .comment {
+            color: #666;
+        }
+        
+        .key {
+            color: #ff0;
+        }
+        
+        .string {
+            color: #0ff;
+        }
+        
+        code {
+            color: #f0f;
+        }
+        
+        pre {
+            background: #111;
+            padding: 15px;
+            margin: 10px 0;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 30px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="badge">TRMNL Plugin</div>
-        <h1>📋 Linear Issues Plugin</h1>
-        <p class="subtitle">Display your Linear issues on TRMNL — issues from current cycle and earlier</p>
-        
-        <div class="section">
-            <h2>🚀 Quick Start</h2>
-            <ol style="padding-left: 20px;">
-                <li style="margin: 10px 0;">Get your Linear API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a></li>
-                <li style="margin: 10px 0;">Go to <a href="https://usetrmnl.com/plugins" target="_blank">TRMNL Plugins</a> and create a new private plugin</li>
-                <li style="margin: 10px 0;">Configure the plugin using the settings below</li>
-                <li style="margin: 10px 0;">Upload the markup template and activate!</li>
-            </ol>
-        </div>
-        
-        <div class="section">
-            <h2>✨ Features</h2>
-            <ul class="feature-list">
-                <li>Shows issues from current cycle</li>
-                <li>Priority-based color coding</li>
-                <li>Displays labels and status</li>
-                <li>Shows cycle numbers and due dates</li>
-                <li>Auto-refreshes every 15 minutes</li>
-                <li>Clean UI optimized for e-ink displays</li>
-            </ul>
-        </div>
-        
-        <div class="section">
-            <h2>⚙️ TRMNL Plugin Configuration</h2>
-            <p style="margin-bottom: 20px;">When creating your plugin in TRMNL, use these settings:</p>
-            
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 15px 0;">
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Strategy:</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">Polling</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Polling URL(s):</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">https://trml-plugins.vercel.app/api/linear-issues</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Polling Verb:</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">GET</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Polling Headers:</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE</div>
-                    <small style="color: #666;">Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</small>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Polling Body:</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">(leave empty)</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Form Fields:</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">(leave empty)</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Remove bleed margin?</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">No</div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <strong style="color: #667eea;">Enable Dark Mode?</strong><br>
-                    <div class="code-block" style="margin: 5px 0;">No (optional - your preference)</div>
-                </div>
-            </div>
-            
-            <div class="warning">
-                <strong>⚠️ Important:</strong><br>
-                Make sure to replace <code>YOUR_LINEAR_API_KEY_HERE</code> in the Polling Headers field with your actual Linear API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a>.
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📄 Markup Template</h2>
-            <p>Download the <code>markup.liquid</code> file from the <a href="https://github.com/joshsorenson/trml-plugins" target="_blank">GitHub repository</a> and upload it to your TRMNL plugin.</p>
-        </div>
-        
-        <div class="section">
-            <h2>🧪 Test Your Configuration</h2>
-            <p style="margin-bottom: 10px;">Test the API endpoint with curl:</p>
-            <div class="code-block">
-curl -H "X-Linear-API-Key: YOUR_LINEAR_API_KEY" \<br>
-&nbsp;&nbsp;https://trml-plugins.vercel.app/api/linear-issues
-            </div>
-            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">You should receive JSON data with your Linear issues.</p>
-        </div>
-        
-        <div class="section">
-            <a href="https://usetrmnl.com/plugins" class="button" target="_blank">Add to TRMNL</a>
-            <a href="https://github.com/joshsorenson/trml-plugins" class="button secondary" target="_blank">View on GitHub</a>
-        </div>
-        
-        <footer>
-            <p>Built for <a href="https://usetrmnl.com" target="_blank">TRMNL</a> • Using <a href="https://linear.app" target="_blank">Linear</a> API</p>
-            <p style="margin-top: 10px; font-size: 0.85em;">Open source • MIT License</p>
-        </footer>
-    </div>
+<pre>
+<span class="comment">/**
+ * TRMNL Linear Plugin
+ * Display your Linear issues on TRMNL - issues from current cycle and earlier
+ * https://github.com/joshsorenson/trml-plugins
+ */</span>
+
+<span class="key">const</span> plugin = {
+  <span class="key">name</span>: <span class="string">"Linear Issues - Current Cycle"</span>,
+  <span class="key">endpoint</span>: <span class="string">"https://trml-plugins.vercel.app/api/linear-issues"</span>,
+  <span class="key">repo</span>: <span class="string">"https://github.com/joshsorenson/trml-plugins"</span>
+};
+</pre>
+
+<h1>// Quick Start</h1>
+<ol>
+  <li>Get your Linear API key: <a href="https://linear.app/settings/api" target="_blank">linear.app/settings/api</a></li>
+  <li>Create plugin: <a href="https://usetrmnl.com/plugins" target="_blank">usetrmnl.com/plugins</a></li>
+  <li>Configure using settings below</li>
+  <li>Upload markup.liquid and activate</li>
+</ol>
+
+<hr>
+
+<h1>// TRMNL Configuration</h1>
+
+<h2>Strategy:</h2>
+<pre>Polling</pre>
+
+<h2>Polling URL(s):</h2>
+<pre>https://trml-plugins.vercel.app/api/linear-issues</pre>
+
+<h2>Polling Verb:</h2>
+<pre>GET</pre>
+
+<h2>Polling Headers:</h2>
+<pre>X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE</pre>
+<p class="comment">^ Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</p>
+
+<h2>Polling Body:</h2>
+<pre>(leave empty)</pre>
+
+<h2>Form Fields:</h2>
+<pre>(leave empty)</pre>
+
+<h2>Remove bleed margin?</h2>
+<pre>No</pre>
+
+<h2>Enable Dark Mode?</h2>
+<pre>No  <span class="comment">// optional - your preference</span></pre>
+
+<hr>
+
+<h1>// Markup Template</h1>
+<p>Download <code>markup.liquid</code> from <a href="https://github.com/joshsorenson/trml-plugins" target="_blank">GitHub</a> and upload to TRMNL plugin</p>
+
+<hr>
+
+<h1>// Test</h1>
+<pre>curl -H "X-Linear-API-Key: YOUR_LINEAR_API_KEY" \
+  https://trml-plugins.vercel.app/api/linear-issues</pre>
+
+<hr>
+
+<h1>// Features</h1>
+<ul>
+  <li>Shows issues from current cycle</li>
+  <li>Priority-based color coding</li>
+  <li>Displays labels, status, due dates</li>
+  <li>Auto-refreshes every 15 minutes</li>
+  <li>E-ink optimized display</li>
+</ul>
+
+<hr>
+
+<p class="comment">// Built for <a href="https://usetrmnl.com" target="_blank">TRMNL</a> • Using <a href="https://linear.app" target="_blank">Linear</a> API • MIT License</p>
+
 </body>
 </html>
 
