@@ -14,36 +14,34 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
 <div class="layout">
   <div class="columns">
     <div class="column">
-      <div class="list" data-list-limit="true" data-list-max-height="550" data-list-hidden-count="true" data-list-max-columns="1">
-        {% if total_count > 0 %}
-          <span class="label">{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} in current cycle</span>
-          
-          {% for issue in issues limit: 15 %}
-            <div class="item">
-              <div class="meta">
-                <span class="index">{{ forloop.index }}</span>
-              </div>
-              <div class="content">
-                <span class="title title--small">{{ issue.identifier }}: {{ issue.title }}</span>
-                <span class="description">{{ issue.status }}{% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}</span>
-                <div class="flex gap--xsmall">
-                  <span class="label label--small">{{ issue.priorityLabel }}</span>
-                  {% for label in issue.labels limit: 2 %}
-                    <span class="label label--small label--underline">{{ label }}</span>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
+      {% if total_count > 0 %}
+        <span class="label">{{ total_count }} {% if total_count == 1 %}issue{% else %}issues{% endif %} in current cycle</span>
+        
+        {% for issue in issues limit: 15 %}
           <div class="item">
+            <div class="meta">
+              <span class="index">{{ forloop.index }}</span>
+            </div>
             <div class="content">
-              <span class="title">No issues due in current cycle</span>
-              <span class="description">Great job staying on top of things!</span>
+              <span class="title title--small">{{ issue.identifier }}: {{ issue.title }}</span>
+              <span class="description">{{ issue.status }}{% if issue.cycleNumber %} | Cycle #{{ issue.cycleNumber }}{% endif %}</span>
+              <div class="flex gap--xsmall">
+                <span class="label label--small">{{ issue.priorityLabel }}</span>
+                {% for label in issue.labels limit: 2 %}
+                  <span class="label label--small label--underline">{{ label }}</span>
+                {% endfor %}
+              </div>
             </div>
           </div>
-        {% endif %}
-      </div>
+        {% endfor %}
+      {% else %}
+        <div class="item">
+          <div class="content">
+            <span class="title">No issues due in current cycle</span>
+            <span class="description">Great job staying on top of things!</span>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
