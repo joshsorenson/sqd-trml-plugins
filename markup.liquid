@@ -3,6 +3,14 @@ TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
 {% endcomment %}
 
+<h1>DEBUG MODE</h1>
+<p>Total count: {{ total_count }}</p>
+<p>User name: {{ user_name }}</p>
+<p>Updated at: {{ updated_at }}</p>
+<p>Issues size: {{ issues.size }}</p>
+<p>First issue: {{ issues[0].identifier }}</p>
+<hr>
+
 <div class="layout">
   <div class="columns">
     <div class="column">
