@@ -41,7 +41,7 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
 </div>
 
 <div class="title_bar">
-  <span class="title">My Linear Issues</span>
-  <span class="instance">{% if user_name %}{{ user_name }} | {% endif %}{{ updated_at | date: "%b %d, %I:%M %p" }}</span>
+  <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
+  <span class="instance">{{ user_name }} | {{ updated_at | date: "%b %d, %I:%M %p" }}</span>
 </div>
 
