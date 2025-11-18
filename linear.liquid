@@ -34,11 +34,11 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 </style>
 
 <style>
-  :is(.view--half_vertical, .view--quadrant) .full-table-view {
+  :is(.view--half_vertical, .view--quadrant, .view--half_horizontal) .full-table-view {
     display: none;
   }
   
-  :is(.view--full, .view--half_horizontal) .compact-list-view {
+  :is(.view--full) .compact-list-view {
     display: none;
   }
   
@@ -56,6 +56,25 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   .title_bar .title,
   .title_bar .instance {
     font-size: 1.15em;
+  }
+  
+  /* Half-screen optimizations */
+  .compact-list-view .item {
+    padding: 0.5em 0;
+  }
+  
+  .compact-list-view .item .content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .compact-list-view .item .title {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .compact-list-view .meta {
+    flex-shrink: 0;
   }
 </style>
 
@@ -110,20 +129,36 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   </table>
 </div>
 
-{% comment %} Compact List Layout (Half Vertical / Quadrant) {% endcomment %}
+{% comment %} Compact List Layout (Half Vertical / Half Horizontal / Quadrant) {% endcomment %}
 <div class="layout layout--top compact-list-view">
-  {% assign max_issues_compact = 6 %}
+  {% assign max_issues_compact = trmnl.plugin_settings.custom_fields_values.max_issues | default: 10 %}
   {% for issue in issues limit: max_issues_compact %}
     <div class="item">
       <div class="meta">
-        <span class="index">{{ forloop.index }}</span>
+        {% if issue.priority > 0 and issue.priority < 3 %}
+          <span class="priority-badge priority-{{ issue.priority }}"></span>
+        {% else %}
+          <span class="index">{{ forloop.index }}</span>
+        {% endif %}
       </div>
       <div class="content">
-        <span class="title title--small clamp clamp--1">{{ issue.identifier }}: {{ issue.title }}</span>
-        <div class="flex gap--xsmall">
+        <div class="flex gap--xsmall" style="flex-wrap: wrap;">
+          <span class="label label--small" style="font-weight: 600;">{{ issue.identifier }}</span>
+          <span class="label label--small clamp clamp--2" style="flex: 1; min-width: 0;">{{ issue.title }}</span>
+        </div>
+        <div class="flex gap--xsmall" style="margin-top: 0.25em;">
           <span class="label label--small">{{ issue.status }}</span>
           {% if issue.cycleNumber %}
-            <span class="label label--small">#{{ issue.cycleNumber }}</span>
+            <span class="label label--small">
+              #{{ issue.cycleNumber }}
+              {% if issue.cycleStatus == 'current' %}
+                <small>●</small>
+              {% elsif issue.cycleStatus == 'past' %}
+                <small>◄</small>
+              {% elsif issue.cycleStatus == 'future' %}
+                <small>►</small>
+              {% endif %}
+            </span>
           {% endif %}
         </div>
       </div>
