@@ -410,7 +410,8 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
       &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody&gt;
-      {% for issue in issues %}
+      {% assign max_issues = trmnl.plugin_settings.custom_fields_values.max_issues | default: 15 %}
+      {% for issue in issues limit: max_issues %}
       &lt;tr&gt;
         &lt;td&gt;
           &lt;span class="issue-id"&gt;
