@@ -59,8 +59,23 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   }
   
   /* Half-screen optimizations */
+  .compact-list-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+  
+  .compact-list-view .layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
   .compact-list-view .item {
-    padding: 0.5em 0;
+    padding: 0.75em 0;
+    flex-shrink: 0;
   }
   
   .compact-list-view .item .content {
@@ -130,7 +145,8 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 </div>
 
 {% comment %} Compact List Layout (Half Vertical / Half Horizontal / Quadrant) {% endcomment %}
-<div class="layout layout--top compact-list-view">
+<div class="compact-list-view">
+<div class="layout layout--fill">
   {% assign max_issues_compact = trmnl.plugin_settings.custom_fields_values.max_issues | default: 10 %}
   {% for issue in issues limit: max_issues_compact %}
     <div class="item">
@@ -164,6 +180,7 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
       </div>
     </div>
   {% endfor %}
+</div>
 </div>
 
 <div class="title_bar">
