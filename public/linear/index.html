@@ -367,8 +367,77 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   }
 &lt;/style&gt;
 
-{% comment %} Full Layout {% endcomment %}
-&lt;div class="layout layout--top view--full"&gt;
+&lt;style&gt;
+  :is(.view--half_vertical, .view--quadrant, .view--half_horizontal) .full-table-view {
+    display: none;
+  }
+  
+  :is(.view--full) .compact-list-view {
+    display: none;
+  }
+  
+  /* Increase font sizes */
+  .full-table-view .title--small,
+  .full-table-view .label--small {
+    font-size: 1.15em;
+  }
+  
+  .compact-list-view .title--small,
+  .compact-list-view .label--small {
+    font-size: 1.15em;
+  }
+  
+  .title_bar .title,
+  .title_bar .instance {
+    font-size: 1.15em;
+  }
+  
+  /* Half-screen optimizations */
+  .compact-list-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+  
+  .compact-list-view .layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .compact-list-view .item {
+    padding: 0.75em 0;
+    flex-shrink: 0;
+  }
+  
+  .compact-list-view .item .content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .compact-list-view .item .title {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .compact-list-view .meta {
+    flex-shrink: 0;
+  }
+  
+  /* Limit items by view size */
+  .view--quadrant .compact-list-view .item:nth-child(n+3) {
+    display: none;
+  }
+  
+  :is(.view--half_vertical, .view--half_horizontal) .compact-list-view .item:nth-child(n+6) {
+    display: none;
+  }
+&lt;/style&gt;
+
+{% comment %} Full Table Layout {% endcomment %}
+&lt;div class="layout layout--top full-table-view"&gt;
   &lt;table class="table" id="linear-issues"&gt;
     &lt;thead&gt;
       &lt;tr&gt;
@@ -383,30 +452,34 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
       {% for issue in issues limit: max_issues %}
       &lt;tr&gt;
         &lt;td&gt;
-          {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
-            &lt;span class="priority-badge priority-{{ issue.priority }} mr--xsmall"&gt;&lt;/span&gt;
-          {% endif %}
-          &lt;span class="label label--small"&gt;{{ issue.identifier }}&lt;/span&gt;
+          &lt;span class="label label--small issue-id"&gt;
+            {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
+              &lt;span class="priority-badge priority-{{ issue.priority }} mr--xsmall"&gt;&lt;/span&gt;
+            {% endif %}
+            {{ issue.identifier }}
+          &lt;/span&gt;
         &lt;/td&gt;
         &lt;td&gt;
-          &lt;span class="clamp clamp--2"&gt;{{ issue.title }}&lt;/span&gt;
+          &lt;span class="label label--small clamp clamp--2 issue-title"&gt;{{ issue.title }}&lt;/span&gt;
         &lt;/td&gt;
         &lt;td&gt;
-          &lt;span class="label label--small"&gt;{{ issue.status }}&lt;/span&gt;
+          &lt;span class="label label--small issue-status"&gt;{{ issue.status }}&lt;/span&gt;
         &lt;/td&gt;
         &lt;td class="text--center"&gt;
-          {% if issue.cycleNumber %}
-            #{{ issue.cycleNumber }}
-            {% if issue.cycleStatus == 'current' %}
-              &lt;small&gt;●&lt;/small&gt;
-            {% elsif issue.cycleStatus == 'past' %}
-              &lt;small&gt;◄&lt;/small&gt;
-            {% elsif issue.cycleStatus == 'future' %}
-              &lt;small&gt;►&lt;/small&gt;
+          &lt;span class="label label--small cycle-info"&gt;
+            {% if issue.cycleNumber %}
+              #{{ issue.cycleNumber }}
+              {% if issue.cycleStatus == 'current' %}
+                &lt;small&gt;●&lt;/small&gt;
+              {% elsif issue.cycleStatus == 'past' %}
+                &lt;small&gt;◄&lt;/small&gt;
+              {% elsif issue.cycleStatus == 'future' %}
+                &lt;small&gt;►&lt;/small&gt;
+              {% endif %}
+            {% else %}
+              -
             {% endif %}
-          {% else %}
-            -
-          {% endif %}
+          &lt;/span&gt;
         &lt;/td&gt;
       &lt;/tr&gt;
       {% endfor %}
@@ -414,25 +487,43 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   &lt;/table&gt;
 &lt;/div&gt;
 
-{% comment %} Half Vertical / Quadrant Layouts {% endcomment %}
-&lt;div class="layout layout--top view--half_vertical view--quadrant"&gt;
-  {% assign max_issues_compact = 5 %}
+{% comment %} Compact List Layout (Half Vertical / Half Horizontal / Quadrant) {% endcomment %}
+&lt;div class="compact-list-view"&gt;
+&lt;div class="layout layout--fill"&gt;
+  {% assign max_issues_compact = trmnl.plugin_settings.custom_fields_values.max_issues | default: 10 %}
   {% for issue in issues limit: max_issues_compact %}
     &lt;div class="item"&gt;
       &lt;div class="meta"&gt;
-        &lt;span class="index"&gt;{{ forloop.index }}&lt;/span&gt;
+        {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
+          &lt;span class="priority-badge priority-{{ issue.priority }}"&gt;&lt;/span&gt;
+        {% else %}
+          &lt;span class="index"&gt;{{ forloop.index }}&lt;/span&gt;
+        {% endif %}
       &lt;/div&gt;
       &lt;div class="content"&gt;
-        &lt;span class="title title--small clamp clamp--1"&gt;{{ issue.identifier }}: {{ issue.title }}&lt;/span&gt;
-        &lt;div class="flex gap--xsmall"&gt;
+        &lt;div class="flex gap--xsmall" style="flex-wrap: wrap;"&gt;
+          &lt;span class="label label--small" style="font-weight: 600;"&gt;{{ issue.identifier }}&lt;/span&gt;
+          &lt;span class="label label--small clamp clamp--2" style="flex: 1; min-width: 0;"&gt;{{ issue.title }}&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class="flex gap--xsmall" style="margin-top: 0.25em;"&gt;
           &lt;span class="label label--small"&gt;{{ issue.status }}&lt;/span&gt;
           {% if issue.cycleNumber %}
-            &lt;span class="label label--small"&gt;#{{ issue.cycleNumber }}&lt;/span&gt;
+            &lt;span class="label label--small"&gt;
+              #{{ issue.cycleNumber }}
+              {% if issue.cycleStatus == 'current' %}
+                &lt;small&gt;●&lt;/small&gt;
+              {% elsif issue.cycleStatus == 'past' %}
+                &lt;small&gt;◄&lt;/small&gt;
+              {% elsif issue.cycleStatus == 'future' %}
+                &lt;small&gt;►&lt;/small&gt;
+              {% endif %}
+            &lt;/span&gt;
           {% endif %}
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   {% endfor %}
+&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class="title_bar"&gt;
