@@ -326,39 +326,15 @@
   <pre class="liquid-template" id="liquid-template">{% comment %}
 TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
+API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 {% endcomment %}
 
 &lt;style&gt;
-  #linear-issues {
-    font-size: 95%;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  }
-  
-  #linear-issues thead th {
-    padding: 8px 4px;
-    border-bottom: 2px solid #000;
-  }
-  
-  #linear-issues tbody td {
-    padding: 10px 4px;
-    vertical-align: middle;
-  }
-  
-  #linear-issues tbody tr {
-    border-bottom: 1px solid #ddd;
-  }
-  
-  #linear-issues tbody tr:last-child {
-    border-bottom: none;
-  }
-  
   .priority-badge {
     display: inline-block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: middle;
   }
   
   .priority-1 { 
@@ -372,23 +348,6 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
   .priority-3 { background: #999; }
   .priority-4 { background: #ccc; }
   
-  .issue-id {
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  
-  .issue-title {
-    font-weight: 500;
-    line-height: 1.3;
-  }
-  
-  .cycle-badge {
-    font-family: 'Courier New', monospace;
-    font-size: 90%;
-    font-weight: 600;
-  }
-  
   .image.linear-icon {
     width: 1.5em;
     height: 1.5em;
@@ -399,7 +358,8 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
   }
 &lt;/style&gt;
 
-&lt;div class="layout layout--top"&gt;
+{% comment %} Full Layout {% endcomment %}
+&lt;div class="layout layout--top view--full"&gt;
   &lt;table class="table" id="linear-issues"&gt;
     &lt;thead&gt;
       &lt;tr&gt;
@@ -414,39 +374,56 @@ Displays Linear issues assigned to you that are due in the current cycle or earl
       {% for issue in issues limit: max_issues %}
       &lt;tr&gt;
         &lt;td&gt;
-          &lt;span class="issue-id"&gt;
-            {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
-              &lt;span class="priority-badge priority-{{ issue.priority }}"&gt;&lt;/span&gt;
-            {% endif %}
-            {{ issue.identifier }}
-          &lt;/span&gt;
+          {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
+            &lt;span class="priority-badge priority-{{ issue.priority }} mr--xsmall"&gt;&lt;/span&gt;
+          {% endif %}
+          &lt;span class="label label--small"&gt;{{ issue.identifier }}&lt;/span&gt;
         &lt;/td&gt;
         &lt;td&gt;
-          &lt;span class="issue-title"&gt;{{ issue.title | truncate: 55 }}&lt;/span&gt;
+          &lt;span class="clamp clamp--2"&gt;{{ issue.title }}&lt;/span&gt;
         &lt;/td&gt;
         &lt;td&gt;
           &lt;span class="label label--small"&gt;{{ issue.status }}&lt;/span&gt;
         &lt;/td&gt;
-        &lt;td&gt;
-          &lt;span class="cycle-badge"&gt;
-            {% if issue.cycleNumber %}
-              #{{ issue.cycleNumber }}
-              {% if issue.cycleStatus == 'current' %}
-                &lt;small&gt;●&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'past' %}
-                &lt;small&gt;◄&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'future' %}
-                &lt;small&gt;►&lt;/small&gt;
-              {% endif %}
-            {% else %}
-              -
+        &lt;td class="text--center"&gt;
+          {% if issue.cycleNumber %}
+            #{{ issue.cycleNumber }}
+            {% if issue.cycleStatus == 'current' %}
+              &lt;small&gt;●&lt;/small&gt;
+            {% elsif issue.cycleStatus == 'past' %}
+              &lt;small&gt;◄&lt;/small&gt;
+            {% elsif issue.cycleStatus == 'future' %}
+              &lt;small&gt;►&lt;/small&gt;
             {% endif %}
-          &lt;/span&gt;
+          {% else %}
+            -
+          {% endif %}
         &lt;/td&gt;
       &lt;/tr&gt;
       {% endfor %}
     &lt;/tbody&gt;
   &lt;/table&gt;
+&lt;/div&gt;
+
+{% comment %} Half Vertical / Quadrant Layouts {% endcomment %}
+&lt;div class="layout layout--top view--half_vertical view--quadrant"&gt;
+  {% assign max_issues_compact = 5 %}
+  {% for issue in issues limit: max_issues_compact %}
+    &lt;div class="item"&gt;
+      &lt;div class="meta"&gt;
+        &lt;span class="index"&gt;{{ forloop.index }}&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="content"&gt;
+        &lt;span class="title title--small clamp clamp--1"&gt;{{ issue.identifier }}: {{ issue.title }}&lt;/span&gt;
+        &lt;div class="flex gap--xsmall"&gt;
+          &lt;span class="label label--small"&gt;{{ issue.status }}&lt;/span&gt;
+          {% if issue.cycleNumber %}
+            &lt;span class="label label--small"&gt;#{{ issue.cycleNumber }}&lt;/span&gt;
+          {% endif %}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  {% endfor %}
 &lt;/div&gt;
 
 &lt;div class="title_bar"&gt;
