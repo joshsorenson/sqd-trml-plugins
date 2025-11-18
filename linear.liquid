@@ -5,47 +5,11 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 {% endcomment %}
 
 <style>
-  :is(.view--half_vertical, .view--quadrant) #linear-issues tbody td {
-    padding: 6px 2px;
-    font-size: 90%;
-  }
-  
-  :is(.view--half_vertical, .view--quadrant) .issue-title {
-    font-size: 0.9em;
-  }
-</style>
-
-<style>
-  #linear-issues {
-    font-size: 95%;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-  }
-  
-  #linear-issues thead th {
-    padding: 8px 4px;
-    border-bottom: 2px solid #000;
-  }
-  
-  #linear-issues tbody td {
-    padding: 10px 4px;
-    vertical-align: middle;
-  }
-  
-  #linear-issues tbody tr {
-    border-bottom: 1px solid #ddd;
-  }
-  
-  #linear-issues tbody tr:last-child {
-    border-bottom: none;
-  }
-  
   .priority-badge {
     display: inline-block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: middle;
   }
   
   .priority-1 { 
@@ -59,23 +23,6 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   .priority-3 { background: #999; }
   .priority-4 { background: #ccc; }
   
-  .issue-id {
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  
-  .issue-title {
-    font-weight: 500;
-    line-height: 1.3;
-  }
-  
-  .cycle-badge {
-    font-family: 'Courier New', monospace;
-    font-size: 90%;
-    font-weight: 600;
-  }
-  
   .image.linear-icon {
     width: 1.5em;
     height: 1.5em;
@@ -86,7 +33,8 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   }
 </style>
 
-<div class="layout layout--top">
+{% comment %} Full Layout {% endcomment %}
+<div class="layout layout--top view--full">
   <table class="table" id="linear-issues">
     <thead>
       <tr>
@@ -101,39 +49,56 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
       {% for issue in issues limit: max_issues %}
       <tr>
         <td>
-          <span class="issue-id">
-            {% if issue.priority > 0 and issue.priority < 3 %}
-              <span class="priority-badge priority-{{ issue.priority }}"></span>
-            {% endif %}
-            {{ issue.identifier }}
-          </span>
+          {% if issue.priority > 0 and issue.priority < 3 %}
+            <span class="priority-badge priority-{{ issue.priority }} mr--xsmall"></span>
+          {% endif %}
+          <span class="label label--small">{{ issue.identifier }}</span>
         </td>
         <td>
-          <span class="issue-title">{{ issue.title | truncate: 55 }}</span>
+          <span class="clamp clamp--2">{{ issue.title }}</span>
         </td>
         <td>
           <span class="label label--small">{{ issue.status }}</span>
         </td>
-        <td>
-          <span class="cycle-badge">
-            {% if issue.cycleNumber %}
-              #{{ issue.cycleNumber }}
-              {% if issue.cycleStatus == 'current' %}
-                <small>●</small>
-              {% elsif issue.cycleStatus == 'past' %}
-                <small>◄</small>
-              {% elsif issue.cycleStatus == 'future' %}
-                <small>►</small>
-              {% endif %}
-            {% else %}
-              -
+        <td class="text--center">
+          {% if issue.cycleNumber %}
+            #{{ issue.cycleNumber }}
+            {% if issue.cycleStatus == 'current' %}
+              <small>●</small>
+            {% elsif issue.cycleStatus == 'past' %}
+              <small>◄</small>
+            {% elsif issue.cycleStatus == 'future' %}
+              <small>►</small>
             {% endif %}
-          </span>
+          {% else %}
+            -
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+{% comment %} Half Vertical / Quadrant Layouts {% endcomment %}
+<div class="layout layout--top view--half_vertical view--quadrant">
+  {% assign max_issues_compact = 5 %}
+  {% for issue in issues limit: max_issues_compact %}
+    <div class="item">
+      <div class="meta">
+        <span class="index">{{ forloop.index }}</span>
+      </div>
+      <div class="content">
+        <span class="title title--small clamp clamp--1">{{ issue.identifier }}: {{ issue.title }}</span>
+        <div class="flex gap--xsmall">
+          <span class="label label--small">{{ issue.status }}</span>
+          {% if issue.cycleNumber %}
+            <span class="label label--small">#{{ issue.cycleNumber }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 </div>
 
 <div class="title_bar">
