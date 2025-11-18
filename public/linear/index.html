@@ -243,9 +243,10 @@
   <div class="config-item">
     <div class="config-label">Polling URL</div>
     <div class="config-value">
-      <button class="copy-btn" onclick="copyToClipboard('https://trml-plugins.vercel.app/api/linear-issues', this)">Copy</button>
-      https://trml-plugins.vercel.app/api/linear-issues
+      <button class="copy-btn" onclick="copyToClipboard('https://trml-plugins.vercel.app/api/linear-issues?linear_api_key={{ linear_api_key }}', this)">Copy</button>
+      https://trml-plugins.vercel.app/api/linear-issues?linear_api_key={{ linear_api_key }}
     </div>
+    <p class="note">The {{ linear_api_key }} will be automatically replaced with the user's API key from the form field</p>
   </div>
 
   <div class="config-item">
@@ -259,10 +260,8 @@
   <div class="config-item">
     <div class="config-label">Polling Headers</div>
     <div class="config-value">
-      <button class="copy-btn" onclick="copyToClipboard('X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE', this)">Copy</button>
-      X-Linear-API-Key=YOUR_LINEAR_API_KEY_HERE
+      (leave empty)
     </div>
-    <p class="note">Replace YOUR_LINEAR_API_KEY_HERE with your actual Linear API key</p>
   </div>
 
   <div class="config-item">
@@ -275,8 +274,30 @@
   <div class="config-item">
     <div class="config-label">Form Fields</div>
     <div class="config-value">
-      (leave empty)
+      <button class="copy-btn" onclick="copyFormFields(this)">Copy</button>
+      <div style="font-size: 0.85em; line-height: 1.8; white-space: pre-wrap;">- keyname: linear_api_key
+  field_type: password
+  name: Linear API Key
+  description: Your personal Linear API key
+  help_text: Get your API key from &lt;a href="https://linear.app/settings/api" target="_blank"&gt;Linear Settings&lt;/a&gt;
+
+- keyname: max_issues
+  field_type: number
+  name: Maximum Issues to Display
+  description: How many issues should be shown
+  default: 15
+  min: 5
+  max: 30
+  optional: true
+
+- keyname: author_info
+  name: About This Plugin
+  field_type: author_bio
+  description: Linear Issues plugin displays your current and past cycle tasks.
+  github_url: https://github.com/joshsorenson/trml-plugins
+  learn_more_url: https://trml-plugins.vercel.app/linear</div>
     </div>
+    <p class="note">Copy and paste this YAML into the Form Fields section in TRMNL</p>
   </div>
 
   <div class="config-item">
@@ -488,6 +509,39 @@ function copyLiquidTemplate(button) {
     button.classList.add('copied');
     setTimeout(() => {
       button.textContent = 'Copy All';
+      button.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyFormFields(button) {
+  const formFields = `- keyname: linear_api_key
+  field_type: password
+  name: Linear API Key
+  description: Your personal Linear API key
+  help_text: Get your API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a>
+
+- keyname: max_issues
+  field_type: number
+  name: Maximum Issues to Display
+  description: How many issues should be shown
+  default: 15
+  min: 5
+  max: 30
+  optional: true
+
+- keyname: author_info
+  name: About This Plugin
+  field_type: author_bio
+  description: Linear Issues plugin displays your current and past cycle tasks.
+  github_url: https://github.com/joshsorenson/trml-plugins
+  learn_more_url: https://trml-plugins.vercel.app/linear`;
+  
+  navigator.clipboard.writeText(formFields).then(() => {
+    button.textContent = 'Copied!';
+    button.classList.add('copied');
+    setTimeout(() => {
+      button.textContent = 'Copy';
       button.classList.remove('copied');
     }, 2000);
   });

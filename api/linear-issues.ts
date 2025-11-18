@@ -44,8 +44,12 @@ export default async function handler(
   }
 
   try {
-    // Read Linear API key from header (preferred) or environment variable (fallback)
+    // Read Linear API key from multiple sources:
+    // 1. Query parameter (for TRMNL form fields)
+    // 2. Header (for direct API calls)
+    // 3. Environment variable (fallback for development)
     const linearApiKey = 
+      (req.query.linear_api_key as string) ||
       (req.headers['x-linear-api-key'] as string) || 
       (req.headers['authorization']?.replace('Bearer ', '') as string) ||
       process.env.LINEAR_API_KEY;
@@ -53,7 +57,7 @@ export default async function handler(
     if (!linearApiKey) {
       res.status(401).json({ 
         error: 'Linear API key required',
-        message: 'Please provide your Linear API key in the X-Linear-API-Key header or Authorization header'
+        message: 'Please provide your Linear API key via query parameter, X-Linear-API-Key header, or Authorization header'
       });
       return;
     }

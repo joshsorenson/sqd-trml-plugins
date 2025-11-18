@@ -1,0 +1,24 @@
+- keyname: linear_api_key
+  field_type: password
+  name: Linear API Key
+  description: Your personal Linear API key
+  help_text: Get your API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a>
+
+- keyname: max_issues
+  field_type: number
+  name: Maximum Issues to Display
+  description: How many issues should be shown
+  default: 15
+  min: 5
+  max: 30
+  optional: true
+  help_text: Shows between 5-30 issues, default is 15
+
+- keyname: author_info
+  keyname: doesnt_matter
+  name: About This Plugin
+  field_type: author_bio
+  description: Linear Issues plugin displays your current and past cycle tasks. Built by Josh Sorenson.
+  github_url: https://github.com/joshsorenson/trml-plugins
+  learn_more_url: https://trml-plugins.vercel.app/linear
+
