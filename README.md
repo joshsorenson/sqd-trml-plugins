@@ -248,4 +248,4 @@ For issues or questions:
 - [Linear Issues Recipe on TRMNL](https://usetrmnl.com/recipes/182427) - Direct link to add the plugin
 - Check the [TRMNL Documentation](https://usetrmnl.com/docs)
 - Review [Linear API Docs](https://developers.linear.app/)
-- Plugin repository: [GitHub](https://github.com/joshsorenson/trml-plugins)
+- Plugin repository: [GitHub](https://github.com/joshsorenson/sqd-trml-plugins)

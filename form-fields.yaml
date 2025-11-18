@@ -18,6 +18,6 @@
   name: About This Plugin
   field_type: author_bio
   description: Linear Issues plugin displays your current and past cycle tasks. Built by Josh Sorenson, VP of Systems at Church Media Squad.
-  github_url: https://github.com/joshsorenson/trml-plugins
+  github_url: https://github.com/joshsorenson/sqd-trml-plugins
   learn_more_url: https://trml-plugins.vercel.app/linear
 
