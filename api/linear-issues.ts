@@ -126,41 +126,50 @@ export default async function handler(
       const cycleInfo = cycleId ? cycleInfoMap.get(cycleId) : undefined;
 
       // Include issues that:
-      // 1. Have a cycle and it's current or earlier
+      // 1. Have a cycle and it's current or earlier (exclude future cycles)
       // 2. Exclude backlog items without cycles
-      const shouldInclude = cycleInfo !== undefined;
+      if (!cycleInfo) {
+        continue; // Skip issues without cycles
+      }
 
-      if (shouldInclude && cycleInfo) {
-        const state = await issue.state;
-        const labels = await issue.labels();
-        const labelsList = await labels.nodes;
-        const team = await issue.team;
-        const currentCycleNumber = currentCycleNumbers.get(team.id);
+      const state = await issue.state;
+      const labels = await issue.labels();
+      const labelsList = await labels.nodes;
+      const team = await issue.team;
+      const currentCycleNumber = currentCycleNumbers.get(team.id);
 
-        // Determine cycle status
-        let cycleStatus: 'current' | 'past' | 'future' = 'current';
-        if (cycleInfo.isCurrent) {
-          cycleStatus = 'current';
-        } else if (currentCycleNumber && cycleInfo.number > currentCycleNumber) {
-          cycleStatus = 'future';
-        } else if (currentCycleNumber && cycleInfo.number < currentCycleNumber) {
+      // Determine cycle status and filter out future cycles
+      let cycleStatus: 'current' | 'past' | 'future' = 'current';
+      if (cycleInfo.isCurrent) {
+        cycleStatus = 'current';
+      } else if (currentCycleNumber) {
+        // Compare cycle numbers to determine if past or future
+        if (cycleInfo.number > currentCycleNumber) {
+          continue; // Skip future cycles
+        } else if (cycleInfo.number < currentCycleNumber) {
           cycleStatus = 'past';
         }
-
-        filteredIssues.push({
-          id: issue.id,
-          identifier: issue.identifier,
-          title: issue.title,
-          priority: issue.priority,
-          priorityLabel: issue.priorityLabel,
-          status: state?.name || 'No Status',
-          url: issue.url,
-          cycleNumber: cycleInfo.number,
-          cycleStatus: cycleStatus,
-          dueDate: issue.dueDate?.toString(),
-          labels: labelsList.map((label: { name: string }) => label.name),
-        });
+        // If cycleInfo.number === currentCycleNumber but isCurrent is false,
+        // it might be a race condition, but we'll treat it as current
+      } else {
+        // No current cycle found for this team - treat as past cycle
+        cycleStatus = 'past';
       }
+
+      // Only include current and past cycles (future cycles already skipped above)
+      filteredIssues.push({
+        id: issue.id,
+        identifier: issue.identifier,
+        title: issue.title,
+        priority: issue.priority,
+        priorityLabel: issue.priorityLabel,
+        status: state?.name || 'No Status',
+        url: issue.url,
+        cycleNumber: cycleInfo.number,
+        cycleStatus: cycleStatus,
+        dueDate: issue.dueDate?.toString(),
+        labels: labelsList.map((label: { name: string }) => label.name),
+      });
     }
 
     // Sort by cycle number (lower/earlier first), then by priority (urgent first)
