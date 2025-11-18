@@ -33,8 +33,18 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   }
 </style>
 
-{% comment %} Full Layout {% endcomment %}
-<div class="layout layout--top view--full">
+<style>
+  :is(.view--half_vertical, .view--quadrant) .full-table-view {
+    display: none;
+  }
+  
+  :is(.view--full, .view--half_horizontal) .compact-list-view {
+    display: none;
+  }
+</style>
+
+{% comment %} Full Table Layout {% endcomment %}
+<div class="layout layout--top full-table-view">
   <table class="table" id="linear-issues">
     <thead>
       <tr>
@@ -80,9 +90,9 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   </table>
 </div>
 
-{% comment %} Half Vertical / Quadrant Layouts {% endcomment %}
-<div class="layout layout--top view--half_vertical view--quadrant">
-  {% assign max_issues_compact = 5 %}
+{% comment %} Compact List Layout (Half Vertical / Quadrant) {% endcomment %}
+<div class="layout layout--top compact-list-view">
+  {% assign max_issues_compact = 6 %}
   {% for issue in issues limit: max_issues_compact %}
     <div class="item">
       <div class="meta">
