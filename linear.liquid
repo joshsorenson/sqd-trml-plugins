@@ -91,6 +91,15 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   .compact-list-view .meta {
     flex-shrink: 0;
   }
+  
+  /* Limit items by view size */
+  .view--quadrant .compact-list-view .item:nth-child(n+3) {
+    display: none;
+  }
+  
+  :is(.view--half_vertical, .view--half_horizontal) .compact-list-view .item:nth-child(n+5) {
+    display: none;
+  }
 </style>
 
 {% comment %} Full Table Layout {% endcomment %}
