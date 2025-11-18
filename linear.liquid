@@ -1,7 +1,19 @@
 {% comment %}
 TRMNL Plugin: Linear Issues - Current Cycle & Overdue
 Displays Linear issues assigned to you that are due in the current cycle or earlier
+API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 {% endcomment %}
+
+<style>
+  :is(.view--half_vertical, .view--quadrant) #linear-issues tbody td {
+    padding: 6px 2px;
+    font-size: 90%;
+  }
+  
+  :is(.view--half_vertical, .view--quadrant) .issue-title {
+    font-size: 0.9em;
+  }
+</style>
 
 <style>
   #linear-issues {
