@@ -44,7 +44,7 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 </style>
 
 {% comment %} Full Table Layout {% endcomment %}
-<div class="layout layout--top full-table-view">
+<div class="layout layout--top full-table-view scale--110">
   <table class="table" id="linear-issues">
     <thead>
       <tr>
@@ -95,7 +95,7 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
 </div>
 
 {% comment %} Compact List Layout (Half Vertical / Quadrant) {% endcomment %}
-<div class="layout layout--top compact-list-view">
+<div class="layout layout--top compact-list-view scale--110">
   {% assign max_issues_compact = 6 %}
   {% for issue in issues limit: max_issues_compact %}
     <div class="item">
