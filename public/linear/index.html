@@ -367,7 +367,7 @@
       &lt;table class=&quot;table table--small w--full&quot;&gt;
         &lt;thead&gt;
           &lt;tr&gt;
-            &lt;th class=&quot;w--16&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;ID&lt;/span&gt;&lt;/th&gt;
+            &lt;th class=&quot;w--24&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;ID&lt;/span&gt;&lt;/th&gt;
             &lt;th class=&quot;w--16&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;Pri&lt;/span&gt;&lt;/th&gt;
             &lt;th&gt;&lt;span class=&quot;title title--small&quot;&gt;Issue&lt;/span&gt;&lt;/th&gt;
             &lt;th class=&quot;w--20&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;Status&lt;/span&gt;&lt;/th&gt;
@@ -379,7 +379,7 @@
           &lt;tr&gt;
             &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;&lt;/td&gt;
             &lt;td&gt;{% render &quot;priority_label&quot;, priority: issue.priority %}&lt;/td&gt;
-            &lt;td&gt;&lt;span class=&quot;label&quot;&gt;{{ issue.title | truncate: 42 }}&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span class=&quot;label&quot;&gt;{{ issue.title | truncate: 36 }}&lt;/span&gt;&lt;/td&gt;
             &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.status | truncate: 12 }}&lt;/span&gt;&lt;/td&gt;
             &lt;td&gt;{% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}&lt;/td&gt;
           &lt;/tr&gt;

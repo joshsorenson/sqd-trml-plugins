@@ -15,7 +15,7 @@
       <table class="table table--small w--full">
         <thead>
           <tr>
-            <th class="w--16"><span class="title title--small">ID</span></th>
+            <th class="w--24"><span class="title title--small">ID</span></th>
             <th class="w--16"><span class="title title--small">Pri</span></th>
             <th><span class="title title--small">Issue</span></th>
             <th class="w--20"><span class="title title--small">Status</span></th>
@@ -27,7 +27,7 @@
           <tr>
             <td><span class="label label--small">{{ issue.identifier }}</span></td>
             <td>{% render "priority_label", priority: issue.priority %}</td>
-            <td><span class="label">{{ issue.title | truncate: 42 }}</span></td>
+            <td><span class="label">{{ issue.title | truncate: 36 }}</span></td>
             <td><span class="label label--small">{{ issue.status | truncate: 12 }}</span></td>
             <td>{% render "cycle_label", cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}</td>
           </tr>
