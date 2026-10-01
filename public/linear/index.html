@@ -311,6 +311,16 @@
   max: 11
   optional: true
   help_text: Between 3 and 11. Anything past that shows as &quot;+N more&quot;. Smaller layouts show fewer so text stays readable.
+- keyname: color_mode
+  field_type: select
+  name: Color
+  description: Red and yellow accents on color screens. Auto detects the device.
+  options:
+  - &quot;Auto: auto&quot;
+  - &quot;Color: color&quot;
+  - &quot;Black and white: mono&quot;
+  default: auto
+  optional: true
 - keyname: author_info
   name: About This Plugin
   field_type: author_bio
@@ -378,10 +388,10 @@
           {% for issue in issues limit: full_rows %}
           &lt;tr&gt;
             &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;&lt;/td&gt;
-            &lt;td&gt;{% render &quot;priority_label&quot;, priority: issue.priority %}&lt;/td&gt;
+            &lt;td&gt;{% render &quot;priority_label&quot;, priority: issue.priority, use_color: use_color %}&lt;/td&gt;
             &lt;td&gt;&lt;span class=&quot;label&quot;&gt;{{ issue.title | truncate: 36 }}&lt;/span&gt;&lt;/td&gt;
             &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.status | truncate: 12 }}&lt;/span&gt;&lt;/td&gt;
-            &lt;td&gt;{% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}&lt;/td&gt;
+            &lt;td&gt;{% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber, use_color: use_color %}&lt;/td&gt;
           &lt;/tr&gt;
           {% endfor %}
         &lt;/tbody&gt;
@@ -404,14 +414,14 @@
         &lt;div class=&quot;item&quot;&gt;
           &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;content&quot;&gt;
-            &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
+            &lt;span class=&quot;value value--large value--tnums{% if use_color and past_count &gt; 0 %} text--red{% endif %}&quot; data-fit-value=&quot;true&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
             &lt;span class=&quot;label&quot;&gt;Carried over&lt;/span&gt;
           &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class=&quot;item&quot;&gt;
           &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
           &lt;div class=&quot;content&quot;&gt;
-            &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
+            &lt;span class=&quot;value value--large value--tnums{% if use_color and urgent_count &gt; 0 %} text--red{% endif %}&quot; data-fit-value=&quot;true&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
             &lt;span class=&quot;label&quot;&gt;Urgent&lt;/span&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -445,7 +455,7 @@
           &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ issue_count }}&lt;/span&gt;
           &lt;span class=&quot;label&quot;&gt;Open&lt;/span&gt;
           {% if past_count &gt; 0 %}
-            &lt;span class=&quot;label label--small label--underline&quot;&gt;{{ past_count }} late&lt;/span&gt;
+            &lt;span class=&quot;label label--small label--underline{% if use_color %} text--red{% endif %}&quot;&gt;{{ past_count }} late&lt;/span&gt;
           {% endif %}
         &lt;/div&gt;
       &lt;/div&gt;
@@ -460,8 +470,8 @@
             &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 34 }}&lt;/span&gt;
             &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
               &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
-              {% render &quot;priority_label&quot;, priority: issue.priority %}
-              {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+              {% render &quot;priority_label&quot;, priority: issue.priority, use_color: use_color %}
+              {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber, use_color: use_color %}
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -498,14 +508,14 @@
     &lt;div class=&quot;item&quot;&gt;
       &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;content&quot;&gt;
-        &lt;span class=&quot;value value--small value--tnums&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
+        &lt;span class=&quot;value value--small value--tnums{% if use_color and past_count &gt; 0 %} text--red{% endif %}&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
         &lt;span class=&quot;label label--small&quot;&gt;Late&lt;/span&gt;
       &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;item&quot;&gt;
       &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;content&quot;&gt;
-        &lt;span class=&quot;value value--small value--tnums&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
+        &lt;span class=&quot;value value--small value--tnums{% if use_color and urgent_count &gt; 0 %} text--red{% endif %}&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
         &lt;span class=&quot;label label--small&quot;&gt;Urgent&lt;/span&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -521,8 +531,8 @@
         &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 60 }}&lt;/span&gt;
         &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
           &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
-          {% render &quot;priority_label&quot;, priority: issue.priority %}
-          {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+          {% render &quot;priority_label&quot;, priority: issue.priority, use_color: use_color %}
+          {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber, use_color: use_color %}
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -555,7 +565,7 @@
           &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 38 }}&lt;/span&gt;
           &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
             &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
-            {% render &quot;priority_label&quot;, priority: issue.priority %}
+            {% render &quot;priority_label&quot;, priority: issue.priority, use_color: use_color %}
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -587,6 +597,24 @@
 {%- assign max_issues = trmnl.plugin_settings.custom_fields_values.max_issues | default: 11 | plus: 0 -%}
 {%- assign issue_count = total_count | default: 0 -%}
 
+{%- comment -%}
+  Color or mono. Color panels (B/W/R/Y, Spectra, etc.) get accents. On mono
+  screens the framework turns color into dot patterns, which makes text hard
+  to read, so mono keeps the black-and-white styling. The optional color_mode
+  setting (auto / color / mono) overrides the device check.
+{%- endcomment -%}
+{%- assign color_mode = trmnl.plugin_settings.custom_fields_values.color_mode | default: &quot;auto&quot; | downcase -%}
+{%- assign device_model = trmnl.device.model | default: &quot;&quot; | downcase -%}
+{%- assign use_color = false -%}
+{%- if color_mode == &quot;color&quot; -%}
+  {%- assign use_color = true -%}
+{%- elsif color_mode == &quot;auto&quot; -%}
+  {%- if device_model contains &quot;bwr&quot; or device_model contains &quot;color&quot; or device_model contains &quot;spectra&quot; or device_model contains &quot;impression&quot; or device_model == &quot;seeed_e1002&quot; -%}
+    {%- assign use_color = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+
 {%- capture instance_label -%}
   {{ issue_count }} open{% if current_cycle %} · Cycle {{ current_cycle }}{% endif %}
 {%- endcapture -%}
@@ -611,19 +639,22 @@
 &lt;/div&gt;
 {% endtemplate %}
 
-{%- comment -%} Only Urgent (filled) and High (outlined) get a badge. Gray text breaks up on 1-bit screens. {%- endcomment -%}
+{%- comment -%}
+  Only Urgent and High get a badge. Mono: filled black / outlined.
+  Color: red / yellow. Gray text breaks up on 1-bit screens, so none here.
+{%- endcomment -%}
 {% template priority_label %}
 {%- if priority == 1 -%}
-  &lt;span class=&quot;label label--small label--filled&quot;&gt;Urgent&lt;/span&gt;
+  &lt;span class=&quot;label label--small {% if use_color %}label--error{% else %}label--filled{% endif %}&quot;&gt;Urgent&lt;/span&gt;
 {%- elsif priority == 2 -%}
-  &lt;span class=&quot;label label--small label--outline&quot;&gt;High&lt;/span&gt;
+  &lt;span class=&quot;label label--small {% if use_color %}label--warning{% else %}label--outline{% endif %}&quot;&gt;High&lt;/span&gt;
 {%- endif -%}
 {% endtemplate %}
 
 {%- comment -%} Carried-over issues get called out; current-cycle ones stay quiet. {%- endcomment -%}
 {% template cycle_label %}
 {%- if cycle_status == &quot;past&quot; -%}
-  &lt;span class=&quot;label label--small label--underline&quot;&gt;C{{ cycle_number }} late&lt;/span&gt;
+  &lt;span class=&quot;label label--small label--underline{% if use_color %} text--red{% endif %}&quot;&gt;C{{ cycle_number }} late&lt;/span&gt;
 {%- else -%}
   &lt;span class=&quot;label label--small&quot;&gt;C{{ cycle_number }}&lt;/span&gt;
 {%- endif -%}

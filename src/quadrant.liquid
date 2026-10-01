@@ -12,7 +12,7 @@
           <span class="title title--small">{{ issue.title | truncate: 38 }}</span>
           <div class="flex flex--row gap--xsmall">
             <span class="label label--small">{{ issue.identifier }}</span>
-            {% render "priority_label", priority: issue.priority %}
+            {% render "priority_label", priority: issue.priority, use_color: use_color %}
           </div>
         </div>
       </div>

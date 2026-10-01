@@ -10,6 +10,24 @@
 {%- assign max_issues = trmnl.plugin_settings.custom_fields_values.max_issues | default: 11 | plus: 0 -%}
 {%- assign issue_count = total_count | default: 0 -%}
 
+{%- comment -%}
+  Color or mono. Color panels (B/W/R/Y, Spectra, etc.) get accents. On mono
+  screens the framework turns color into dot patterns, which makes text hard
+  to read, so mono keeps the black-and-white styling. The optional color_mode
+  setting (auto / color / mono) overrides the device check.
+{%- endcomment -%}
+{%- assign color_mode = trmnl.plugin_settings.custom_fields_values.color_mode | default: "auto" | downcase -%}
+{%- assign device_model = trmnl.device.model | default: "" | downcase -%}
+{%- assign use_color = false -%}
+{%- if color_mode == "color" -%}
+  {%- assign use_color = true -%}
+{%- elsif color_mode == "auto" -%}
+  {%- if device_model contains "bwr" or device_model contains "color" or device_model contains "spectra" or device_model contains "impression" or device_model == "seeed_e1002" -%}
+    {%- assign use_color = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+
 {%- capture instance_label -%}
   {{ issue_count }} open{% if current_cycle %} · Cycle {{ current_cycle }}{% endif %}
 {%- endcapture -%}
@@ -34,19 +52,22 @@
 </div>
 {% endtemplate %}
 
-{%- comment -%} Only Urgent (filled) and High (outlined) get a badge. Gray text breaks up on 1-bit screens. {%- endcomment -%}
+{%- comment -%}
+  Only Urgent and High get a badge. Mono: filled black / outlined.
+  Color: red / yellow. Gray text breaks up on 1-bit screens, so none here.
+{%- endcomment -%}
 {% template priority_label %}
 {%- if priority == 1 -%}
-  <span class="label label--small label--filled">Urgent</span>
+  <span class="label label--small {% if use_color %}label--error{% else %}label--filled{% endif %}">Urgent</span>
 {%- elsif priority == 2 -%}
-  <span class="label label--small label--outline">High</span>
+  <span class="label label--small {% if use_color %}label--warning{% else %}label--outline{% endif %}">High</span>
 {%- endif -%}
 {% endtemplate %}
 
 {%- comment -%} Carried-over issues get called out; current-cycle ones stay quiet. {%- endcomment -%}
 {% template cycle_label %}
 {%- if cycle_status == "past" -%}
-  <span class="label label--small label--underline">C{{ cycle_number }} late</span>
+  <span class="label label--small label--underline{% if use_color %} text--red{% endif %}">C{{ cycle_number }} late</span>
 {%- else -%}
   <span class="label label--small">C{{ cycle_number }}</span>
 {%- endif -%}

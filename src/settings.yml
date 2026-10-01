@@ -30,6 +30,16 @@ custom_fields:
   max: 11
   optional: true
   help_text: Between 3 and 11. Anything past that shows as "+N more". Smaller layouts show fewer so text stays readable.
+- keyname: color_mode
+  field_type: select
+  name: Color
+  description: Red and yellow accents on color screens. Auto detects the device.
+  options:
+  - "Auto: auto"
+  - "Color: color"
+  - "Black and white: mono"
+  default: auto
+  optional: true
 - keyname: author_info
   name: About This Plugin
   field_type: author_bio
