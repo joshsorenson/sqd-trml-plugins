@@ -148,6 +148,16 @@
             margin-top: 8px;
         }
         
+        .copy-source {
+            margin: 0;
+            padding-right: 70px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
         .liquid-template {
             background: #fff;
             border: 1px solid #d0d0d0;
@@ -223,18 +233,18 @@
 <h2>Quick Start</h2>
 
 <div style="background: #f0f0f0; border: 1px solid #d0d0d0; padding: 20px; margin-bottom: 30px;">
-  <h3 style="margin-top: 0;">🚀 Easiest Method: Use the Recipe</h3>
+  <h3 style="margin-top: 0;">Easiest Method: Use the Recipe</h3>
   <p style="margin-bottom: 15px;">The fastest way to get started is using the pre-configured recipe:</p>
-  <a href="https://usetrmnl.com/recipes/182427" target="_blank" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border: none; font-size: 0.9em; letter-spacing: 0.5px; text-transform: uppercase;">Add Linear Issues Recipe →</a>
+  <a href="https://trmnl.com/recipes/182427" target="_blank" style="display: inline-block; background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border: none; font-size: 0.9em; letter-spacing: 0.5px; text-transform: uppercase;">Add Linear Issues Recipe →</a>
 </div>
 
 <h3>Manual Setup</h3>
 <p>Or follow these steps to set it up manually:</p>
 <ol>
   <li>Get your Linear API key from <a href="https://linear.app/settings/api" target="_blank">linear.app/settings/api</a></li>
-  <li>Create a new plugin at <a href="https://usetrmnl.com/plugins" target="_blank">usetrmnl.com/plugins</a></li>
+  <li>Create a new plugin at <a href="https://trmnl.com/plugins" target="_blank">trmnl.com/plugins</a></li>
   <li>Copy the configuration values below</li>
-  <li>Copy and paste the markup template</li>
+  <li>Paste each markup block into its tab</li>
   <li>Save and activate your plugin</li>
 </ol>
 
@@ -249,14 +259,23 @@
     </div>
   </div>
 
-  <div class="config-item">
-    <div class="config-label">Polling URL</div>
-    <div class="config-value">
-      <button class="copy-btn" onclick="copyToClipboard('https://trml-plugins.vercel.app/api/linear-issues?linear_api_key={{ linear_api_key }}', this)">Copy</button>
-      https://trml-plugins.vercel.app/api/linear-issues?linear_api_key={{ linear_api_key }}
-    </div>
-    <p class="note">The {{ linear_api_key }} variable will be automatically replaced with the user's API key from the form field</p>
+<!-- sync:polling -->
+<div class="config-item">
+  <div class="config-label">Polling URL</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('polling-url', this)">Copy</button>
+    <pre class="copy-source" id="polling-url">https://trml-plugins.vercel.app/api/linear-issues</pre>
   </div>
+</div>
+<div class="config-item">
+  <div class="config-label">Polling Headers</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('polling-headers', this)">Copy</button>
+    <pre class="copy-source" id="polling-headers">x-linear-api-key={{ linear_api_key }}</pre>
+  </div>
+</div>
+<p class="note">TRMNL fills in {{ linear_api_key }} from the form field. The key travels in a header, so it never shows up in a URL or a log.</p>
+<!-- /sync:polling -->
 
   <div class="config-item">
     <div class="config-label">Polling Verb</div>
@@ -267,47 +286,42 @@
   </div>
 
   <div class="config-item">
-    <div class="config-label">Polling Headers</div>
-    <div class="config-value">
-      (leave empty)
-    </div>
-  </div>
-
-  <div class="config-item">
     <div class="config-label">Polling Body</div>
     <div class="config-value">
       (leave empty)
     </div>
   </div>
 
-  <div class="config-item">
-    <div class="config-label">Form Fields</div>
-    <div class="config-value">
-      <button class="copy-btn" onclick="copyFormFields(this)">Copy</button>
-      <div style="font-size: 0.85em; line-height: 1.8; white-space: pre-wrap;">- keyname: linear_api_key
+<!-- sync:form-fields -->
+<div class="config-item">
+  <div class="config-label">Form Fields</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('form-fields', this)">Copy</button>
+    <pre class="copy-source" id="form-fields">- keyname: linear_api_key
   field_type: password
   name: Linear API Key
   description: Your personal Linear API key
-  help_text: Get your API key from &lt;a href="https://linear.app/settings/api" target="_blank"&gt;Linear Settings&lt;/a&gt;
-
+  help_text: Create one in &lt;a href=&quot;https://linear.app/settings/account/security&quot; target=&quot;_blank&quot;&gt;Linear Settings, Security and access&lt;/a&gt;. It&#x27;s sent as a header, never in the URL.
 - keyname: max_issues
   field_type: number
-  name: Maximum Issues to Display
-  description: How many issues should be shown
-  default: 15
-  min: 5
-  max: 30
+  name: Maximum Issues
+  description: Most issues to show on the full layout
+  default: 11
+  min: 3
+  max: 11
   optional: true
-
+  help_text: Between 3 and 11. Anything past that shows as &quot;+N more&quot;. Smaller layouts show fewer so text stays readable.
 - keyname: author_info
   name: About This Plugin
   field_type: author_bio
-  description: Linear Issues plugin displays your current and past cycle tasks. Built by Josh Sorenson, VP of Systems at Church Media Squad.
-  github_url: https://github.com/joshsorenson/sqd-trml-plugins
-  learn_more_url: https://trml-plugins.vercel.app/linear</div>
-    </div>
-    <p class="note">Copy and paste this YAML into the Form Fields section in TRMNL</p>
+  category: productivity
+  description: Shows your open Linear issues from the current and past cycles, oldest and most urgent first. Built by Josh Sorenson, VP of Systems at Church Media Squad.
+  learn_more_url: https://trml-plugins.vercel.app/linear
+</pre>
   </div>
+</div>
+<!-- /sync:form-fields -->
+  <p class="note">Paste this YAML into the Form Fields section in TRMNL</p>
 
   <div class="config-item">
     <div class="config-label">Remove Bleed Margin</div>
@@ -327,227 +341,307 @@
   </div>
 </div>
 
-<h2>Markup Template</h2>
-<p>Copy this template and paste it into TRMNL's markup editor:</p>
+<h2>Markup</h2>
+<p>TRMNL's markup editor has a tab for each layout. Paste each block into the matching tab. Shared runs before every layout and holds the logo and helpers the others use.</p>
 
-<div style="position: relative;">
-  <button class="copy-btn" style="position: absolute; top: 15px; right: 15px; z-index: 10;" onclick="copyLiquidTemplate(this)">Copy All</button>
-  <pre class="liquid-template" id="liquid-template">{% comment %}
-TRMNL Plugin: Linear Issues - Current Cycle & Overdue
-Displays Linear issues assigned to you that are due in the current cycle or earlier
-API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
-{% endcomment %}
-
-&lt;style&gt;
-  .priority-badge {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  
-  .priority-1 { 
-    background: #000;
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
-  }
-  .priority-2 { 
-    background: #666;
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
-  }
-  .priority-3 { background: #999; }
-  .priority-4 { background: #ccc; }
-  
-  .image.linear-icon {
-    width: 1.5em;
-    height: 1.5em;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' width='200' height='200' viewBox='0 0 100 100'%3E%3Cpath fill='%23000' d='M1.22541 61.5228c-.2225-.9485.90748-1.5459 1.59638-.857L39.3342 97.1782c.6889.6889.0915 1.8189-.857 1.5964C20.0515 94.4522 5.54779 79.9485 1.22541 61.5228ZM.00189135 46.8891c-.01764375.2833.08887215.5599.28957165.7606L52.3503 99.7085c.2007.2007.4773.3075.7606.2896 2.3692-.1476 4.6938-.46 6.9624-.9259.7645-.157 1.0301-1.0963.4782-1.6481L2.57595 39.4485c-.55186-.5519-1.49117-.2863-1.648174.4782-.465915 2.2686-.77832 4.5932-.92588465 6.9624ZM4.21093 29.7054c-.16649.3738-.08169.8106.20765 1.1l64.77602 64.776c.2894.2894.7262.3742 1.1.2077 1.7861-.7956 3.5171-1.6927 5.1855-2.684.5521-.328.6373-1.0867.1832-1.5407L8.43566 24.3367c-.45409-.4541-1.21271-.3689-1.54074.1832-.99132 1.6684-1.88843 3.3994-2.68399 5.1855ZM12.6587 18.074c-.3701-.3701-.393-.9637-.0443-1.3541C21.7795 6.45931 35.1114 0 49.9519 0 77.5927 0 100 22.4073 100 50.0481c0 14.8405-6.4593 28.1724-16.7199 37.3375-.3903.3487-.984.3258-1.3542-.0443L12.6587 18.074Z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-    vertical-align: middle;
-  }
-&lt;/style&gt;
-
-&lt;style&gt;
-  :is(.view--half_vertical, .view--quadrant, .view--half_horizontal) .full-table-view {
-    display: none;
-  }
-  
-  :is(.view--full) .compact-list-view {
-    display: none;
-  }
-  
-  /* Increase font sizes */
-  .full-table-view .title--small,
-  .full-table-view .label--small {
-    font-size: 1.15em;
-  }
-  
-  .compact-list-view .title--small,
-  .compact-list-view .label--small {
-    font-size: 1.15em;
-  }
-  
-  .title_bar .title,
-  .title_bar .instance {
-    font-size: 1.15em;
-  }
-  
-  /* Half-screen optimizations */
-  .compact-list-view {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
-  }
-  
-  .compact-list-view .layout {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  
-  .compact-list-view .item {
-    padding: 0.75em 0;
-    flex-shrink: 0;
-  }
-  
-  .compact-list-view .item .content {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .compact-list-view .item .title {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
-  
-  .compact-list-view .meta {
-    flex-shrink: 0;
-  }
-  
-  /* Limit items by view size */
-  .view--quadrant .compact-list-view .item:nth-child(n+3) {
-    display: none;
-  }
-  
-  :is(.view--half_vertical, .view--half_horizontal) .compact-list-view .item:nth-child(n+6) {
-    display: none;
-  }
-&lt;/style&gt;
-
-{% comment %} Full Table Layout {% endcomment %}
-&lt;div class="layout layout--top full-table-view"&gt;
-  &lt;table class="table" id="linear-issues"&gt;
-    &lt;thead&gt;
-      &lt;tr&gt;
-        &lt;th&gt;&lt;span class="title title--small"&gt;ID&lt;/span&gt;&lt;/th&gt;
-        &lt;th&gt;&lt;span class="title title--small"&gt;Title&lt;/span&gt;&lt;/th&gt;
-        &lt;th&gt;&lt;span class="title title--small"&gt;Status&lt;/span&gt;&lt;/th&gt;
-        &lt;th&gt;&lt;span class="title title--small"&gt;Cycle&lt;/span&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-    &lt;/thead&gt;
-    &lt;tbody&gt;
-      {% assign max_issues = trmnl.plugin_settings.custom_fields_values.max_issues | default: 15 %}
-      {% for issue in issues limit: max_issues %}
-      &lt;tr&gt;
-        &lt;td&gt;
-          &lt;span class="label label--small issue-id"&gt;
-            {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
-              &lt;span class="priority-badge priority-{{ issue.priority }} mr--xsmall"&gt;&lt;/span&gt;
-            {% endif %}
-            {{ issue.identifier }}
-          &lt;/span&gt;
-        &lt;/td&gt;
-        &lt;td&gt;
-          &lt;span class="label label--small clamp clamp--2 issue-title"&gt;{{ issue.title }}&lt;/span&gt;
-        &lt;/td&gt;
-        &lt;td&gt;
-          &lt;span class="label label--small issue-status"&gt;{{ issue.status }}&lt;/span&gt;
-        &lt;/td&gt;
-        &lt;td class="text--center"&gt;
-          &lt;span class="label label--small cycle-info"&gt;
-            {% if issue.cycleNumber %}
-              #{{ issue.cycleNumber }}
-              {% if issue.cycleStatus == 'current' %}
-                &lt;small&gt;●&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'past' %}
-                &lt;small&gt;◄&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'future' %}
-                &lt;small&gt;►&lt;/small&gt;
-              {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          &lt;/span&gt;
-        &lt;/td&gt;
-      &lt;/tr&gt;
-      {% endfor %}
-    &lt;/tbody&gt;
-  &lt;/table&gt;
-&lt;/div&gt;
-
-{% comment %} Compact List Layout (Half Vertical / Half Horizontal / Quadrant) {% endcomment %}
-&lt;div class="compact-list-view"&gt;
-&lt;div class="layout layout--fill"&gt;
-  {% assign max_issues_compact = trmnl.plugin_settings.custom_fields_values.max_issues | default: 10 %}
-  {% for issue in issues limit: max_issues_compact %}
-    &lt;div class="item"&gt;
-      &lt;div class="meta"&gt;
-        {% if issue.priority &gt; 0 and issue.priority &lt; 3 %}
-          &lt;span class="priority-badge priority-{{ issue.priority }}"&gt;&lt;/span&gt;
-        {% else %}
-          &lt;span class="index"&gt;{{ forloop.index }}&lt;/span&gt;
-        {% endif %}
+<div class="config-section">
+<!-- sync:markup -->
+<div class="config-item">
+  <div class="config-label">Full</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('markup-full', this)">Copy</button>
+    <pre class="copy-source" id="markup-full">{%- comment -%}
+  Full (800x480): issue table on the left 5/6, summary numbers on the right 1/6.
+{%- endcomment -%}
+{% if issues and issues.size &gt; 0 %}
+{%- comment -%}
+  11 single-line rows is what fits. We cap rows ourselves instead of using the
+  table-limit engine, because its &quot;and N more&quot; text is gray and breaks up on 1-bit.
+{%- endcomment -%}
+{%- assign full_rows = max_issues | at_most: 11 -%}
+{%- assign hidden_count = issues.size | minus: full_rows -%}
+&lt;div class=&quot;layout layout--top&quot;&gt;
+  &lt;div class=&quot;grid gap--large h--full w--full&quot;&gt;
+    &lt;div class=&quot;col--span-10 h--full&quot;&gt;
+      &lt;div class=&quot;flex flex--col flex--left gap--small w--full&quot;&gt;
+      &lt;table class=&quot;table table--small w--full&quot;&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th class=&quot;w--16&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;ID&lt;/span&gt;&lt;/th&gt;
+            &lt;th class=&quot;w--16&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;Pri&lt;/span&gt;&lt;/th&gt;
+            &lt;th&gt;&lt;span class=&quot;title title--small&quot;&gt;Issue&lt;/span&gt;&lt;/th&gt;
+            &lt;th class=&quot;w--20&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;Status&lt;/span&gt;&lt;/th&gt;
+            &lt;th class=&quot;w--16&quot;&gt;&lt;span class=&quot;title title--small&quot;&gt;Cycle&lt;/span&gt;&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          {% for issue in issues limit: full_rows %}
+          &lt;tr&gt;
+            &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;{% render &quot;priority_label&quot;, priority: issue.priority %}&lt;/td&gt;
+            &lt;td&gt;&lt;span class=&quot;label&quot;&gt;{{ issue.title | truncate: 42 }}&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span class=&quot;label label--small&quot;&gt;{{ issue.status | truncate: 12 }}&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;{% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}&lt;/td&gt;
+          &lt;/tr&gt;
+          {% endfor %}
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+      {% if hidden_count &gt; 0 %}
+        &lt;span class=&quot;label label--small&quot;&gt;+{{ hidden_count }} more in Linear&lt;/span&gt;
+      {% endif %}
       &lt;/div&gt;
-      &lt;div class="content"&gt;
-        &lt;div class="flex gap--xsmall" style="flex-wrap: wrap;"&gt;
-          &lt;span class="label label--small" style="font-weight: 600;"&gt;{{ issue.identifier }}&lt;/span&gt;
-          &lt;span class="label label--small clamp clamp--2" style="flex: 1; min-width: 0;"&gt;{{ issue.title }}&lt;/span&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;col--span-2&quot;&gt;
+      &lt;div class=&quot;flex flex--col gap--large&quot;&gt;
+        &lt;div class=&quot;item&quot;&gt;
+          &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;content&quot;&gt;
+            &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ issue_count }}&lt;/span&gt;
+            &lt;span class=&quot;label&quot;&gt;Open&lt;/span&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
-        &lt;div class="flex gap--xsmall" style="margin-top: 0.25em;"&gt;
-          &lt;span class="label label--small"&gt;{{ issue.status }}&lt;/span&gt;
-          {% if issue.cycleNumber %}
-            &lt;span class="label label--small"&gt;
-              #{{ issue.cycleNumber }}
-              {% if issue.cycleStatus == 'current' %}
-                &lt;small&gt;●&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'past' %}
-                &lt;small&gt;◄&lt;/small&gt;
-              {% elsif issue.cycleStatus == 'future' %}
-                &lt;small&gt;►&lt;/small&gt;
-              {% endif %}
-            &lt;/span&gt;
+        &lt;div class=&quot;item&quot;&gt;
+          &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;content&quot;&gt;
+            &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
+            &lt;span class=&quot;label&quot;&gt;Carried over&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;item&quot;&gt;
+          &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;content&quot;&gt;
+            &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
+            &lt;span class=&quot;label&quot;&gt;Urgent&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{% else %}
+  {% render &quot;empty_state&quot;, error: error, details: details %}
+{% endif %}
+
+{% render &quot;title_bar&quot;, logo: linear_logo, instance: instance_label %}
+</pre>
+  </div>
+</div>
+<div class="config-item">
+  <div class="config-label">Half Horizontal</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('markup-half_horizontal', this)">Copy</button>
+    <pre class="copy-source" id="markup-half_horizontal">{%- comment -%}
+  Half horizontal (800x240): one shallow strip. Count on the left, top 4 issues in a 2x2 grid.
+  Fixed counts instead of the overflow engine, which can&#x27;t measure height inside a grid cell.
+{%- endcomment -%}
+{% if issues and issues.size &gt; 0 %}
+&lt;div class=&quot;layout&quot;&gt;
+  &lt;div class=&quot;grid gap--large&quot;&gt;
+    &lt;div class=&quot;col--span-2&quot;&gt;
+      &lt;div class=&quot;item&quot;&gt;
+        &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;content&quot;&gt;
+          &lt;span class=&quot;value value--large value--tnums&quot; data-fit-value=&quot;true&quot;&gt;{{ issue_count }}&lt;/span&gt;
+          &lt;span class=&quot;label&quot;&gt;Open&lt;/span&gt;
+          {% if past_count &gt; 0 %}
+            &lt;span class=&quot;label label--small label--underline&quot;&gt;{{ past_count }} late&lt;/span&gt;
           {% endif %}
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-  {% endfor %}
-&lt;/div&gt;
-&lt;/div&gt;
 
-&lt;div class="title_bar"&gt;
-  &lt;span class="image linear-icon image-stroke"&gt;&lt;/span&gt;
-  &lt;span class="title"&gt;{{ trmnl.plugin_settings.instance_name }}&lt;/span&gt;
-  &lt;span class="instance"&gt;{{ issues | size }} Issues{% if current_cycle %} • Cycle #{{ current_cycle }}{% endif %}&lt;/span&gt;
+    &lt;div class=&quot;col--span-10&quot;&gt;
+      &lt;div class=&quot;grid grid--cols-2 gap&quot;&gt;
+        {% for issue in issues limit: 4 %}
+        &lt;div class=&quot;item&quot;&gt;
+          &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;content&quot;&gt;
+            &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 34 }}&lt;/span&gt;
+            &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
+              &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
+              {% render &quot;priority_label&quot;, priority: issue.priority %}
+              {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        {% endfor %}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 &lt;/div&gt;
+{% else %}
+  {% render &quot;empty_state&quot;, error: error, details: details %}
+{% endif %}
 
-&lt;script&gt;
-  var issues_table = document.querySelector("#linear-issues");
-  if (issues_table.clientHeight &gt;= issues_table.parentNode.clientHeight) {
-    issues_table.classList.add("table--condensed");
-  }
-&lt;/script&gt;</pre>
+{% render &quot;title_bar&quot;, logo: linear_logo, instance: instance_label %}
+</pre>
+  </div>
+</div>
+<div class="config-item">
+  <div class="config-label">Half Vertical</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('markup-half_vertical', this)">Copy</button>
+    <pre class="copy-source" id="markup-half_vertical">{%- comment -%}
+  Half vertical (400x480): narrow column. Three counts across the top, top 6 issues stacked below.
+{%- endcomment -%}
+{% if issues and issues.size &gt; 0 %}
+&lt;div class=&quot;layout layout--col layout--top gap&quot;&gt;
+  &lt;div class=&quot;grid grid--cols-3 w--full&quot;&gt;
+    &lt;div class=&quot;item&quot;&gt;
+      &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;content&quot;&gt;
+        &lt;span class=&quot;value value--small value--tnums&quot;&gt;{{ issue_count }}&lt;/span&gt;
+        &lt;span class=&quot;label label--small&quot;&gt;Open&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;item&quot;&gt;
+      &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;content&quot;&gt;
+        &lt;span class=&quot;value value--small value--tnums&quot;&gt;{{ past_count | default: 0 }}&lt;/span&gt;
+        &lt;span class=&quot;label label--small&quot;&gt;Late&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;item&quot;&gt;
+      &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;content&quot;&gt;
+        &lt;span class=&quot;value value--small value--tnums&quot;&gt;{{ urgent_count | default: 0 }}&lt;/span&gt;
+        &lt;span class=&quot;label label--small&quot;&gt;Urgent&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;flex flex--col gap w--full&quot;&gt;
+    {% for issue in issues limit: 6 %}
+    &lt;div class=&quot;item&quot;&gt;
+      &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+      &lt;div class=&quot;content&quot;&gt;
+        &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 60 }}&lt;/span&gt;
+        &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
+          &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
+          {% render &quot;priority_label&quot;, priority: issue.priority %}
+          {% render &quot;cycle_label&quot;, cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    {% endfor %}
+  &lt;/div&gt;
+&lt;/div&gt;
+{% else %}
+  {% render &quot;empty_state&quot;, error: error, details: details %}
+{% endif %}
+
+{% render &quot;title_bar&quot;, logo: linear_logo, instance: instance_label %}
+</pre>
+  </div>
+</div>
+<div class="config-item">
+  <div class="config-label">Quadrant</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('markup-quadrant', this)">Copy</button>
+    <pre class="copy-source" id="markup-quadrant">{%- comment -%}
+  Quadrant (400x240): a glance. Just the top 3 issues, most overdue and urgent first.
+{%- endcomment -%}
+{% if issues and issues.size &gt; 0 %}
+&lt;div class=&quot;layout&quot;&gt;
+  &lt;div class=&quot;columns&quot;&gt;
+    &lt;div class=&quot;column&quot;&gt;
+      {% for issue in issues limit: 3 %}
+      &lt;div class=&quot;item&quot;&gt;
+        &lt;div class=&quot;meta&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;content&quot;&gt;
+          &lt;span class=&quot;title title--small&quot;&gt;{{ issue.title | truncate: 38 }}&lt;/span&gt;
+          &lt;div class=&quot;flex flex--row gap--xsmall&quot;&gt;
+            &lt;span class=&quot;label label--small&quot;&gt;{{ issue.identifier }}&lt;/span&gt;
+            {% render &quot;priority_label&quot;, priority: issue.priority %}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      {% endfor %}
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+{% else %}
+  {% render &quot;empty_state&quot;, error: error, details: details %}
+{% endif %}
+
+{% render &quot;title_bar&quot;, logo: linear_logo, instance: instance_label %}
+</pre>
+  </div>
+</div>
+<div class="config-item">
+  <div class="config-label">Shared</div>
+  <div class="config-value">
+    <button class="copy-btn" onclick="copyBlock('markup-shared', this)">Copy</button>
+    <pre class="copy-source" id="markup-shared">{%- comment -%}
+  Runs before every size. Holds the logo, shared limits and partials.
+  Data comes from /api/linear-issues (see README for the response shape).
+{%- endcomment -%}
+
+{%- capture linear_logo -%}
+&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;24&quot; height=&quot;24&quot; viewBox=&quot;0 0 100 100&quot; fill=&quot;none&quot;&gt;&lt;path fill=&quot;#000&quot; d=&quot;M1.22541 61.5228c-.2225-.9485.90748-1.5459 1.59638-.857L39.3342 97.1782c.6889.6889.0915 1.8189-.857 1.5964C20.0515 94.4522 5.54779 79.9485 1.22541 61.5228ZM.00189135 46.8891c-.01764375.2833.08887215.5599.28957165.7606L52.3503 99.7085c.2007.2007.4773.3075.7606.2896 2.3692-.1476 4.6938-.46 6.9624-.9259.7645-.157 1.0301-1.0963.4782-1.6481L2.57595 39.4485c-.55186-.5519-1.49117-.2863-1.648174.4782-.465915 2.2686-.77832 4.5932-.92588465 6.9624ZM4.21093 29.7054c-.16649.3738-.08169.8106.20765 1.1l64.77602 64.776c.2894.2894.7262.3742 1.1.2077 1.7861-.7956 3.5171-1.6927 5.1855-2.684.5521-.328.6373-1.0867.1832-1.5407L8.43566 24.3367c-.45409-.4541-1.21271-.3689-1.54074.1832-.99132 1.6684-1.88843 3.3994-2.68399 5.1855ZM12.6587 18.074c-.3701-.3701-.393-.9637-.0443-1.3541C21.7795 6.45931 35.1114 0 49.9519 0 77.5927 0 100 22.4073 100 50.0481c0 14.8405-6.4593 28.1724-16.7199 37.3375-.3903.3487-.984.3258-1.3542-.0443L12.6587 18.074Z&quot;/&gt;&lt;/svg&gt;
+{%- endcapture -%}
+
+{%- assign max_issues = trmnl.plugin_settings.custom_fields_values.max_issues | default: 11 | plus: 0 -%}
+{%- assign issue_count = total_count | default: 0 -%}
+
+{%- capture instance_label -%}
+  {{ issue_count }} open{% if current_cycle %} · Cycle {{ current_cycle }}{% endif %}
+{%- endcapture -%}
+
+{% template title_bar %}
+&lt;div class=&quot;title_bar&quot;&gt;
+  &lt;img class=&quot;image image-stroke&quot; src=&quot;data:image/svg+xml;base64,{{ logo | base64_encode }}&quot; /&gt;
+  &lt;span class=&quot;title&quot;&gt;{{ trmnl.plugin_settings.instance_name | default: &quot;Linear&quot; }}&lt;/span&gt;
+  &lt;span class=&quot;instance&quot;&gt;{{ instance }}&lt;/span&gt;
+&lt;/div&gt;
+{% endtemplate %}
+
+{% template empty_state %}
+&lt;div class=&quot;layout layout--col layout--center gap&quot;&gt;
+  {% if error %}
+    &lt;span class=&quot;title&quot;&gt;Can&#x27;t reach Linear&lt;/span&gt;
+    &lt;span class=&quot;description text--center&quot; data-clamp=&quot;2&quot;&gt;{{ details | default: error }}&lt;/span&gt;
+  {% else %}
+    &lt;span class=&quot;title&quot;&gt;All clear&lt;/span&gt;
+    &lt;span class=&quot;description&quot;&gt;No open issues in this cycle or earlier&lt;/span&gt;
+  {% endif %}
+&lt;/div&gt;
+{% endtemplate %}
+
+{%- comment -%} Only Urgent (filled) and High (outlined) get a badge. Gray text breaks up on 1-bit screens. {%- endcomment -%}
+{% template priority_label %}
+{%- if priority == 1 -%}
+  &lt;span class=&quot;label label--small label--filled&quot;&gt;Urgent&lt;/span&gt;
+{%- elsif priority == 2 -%}
+  &lt;span class=&quot;label label--small label--outline&quot;&gt;High&lt;/span&gt;
+{%- endif -%}
+{% endtemplate %}
+
+{%- comment -%} Carried-over issues get called out; current-cycle ones stay quiet. {%- endcomment -%}
+{% template cycle_label %}
+{%- if cycle_status == &quot;past&quot; -%}
+  &lt;span class=&quot;label label--small label--underline&quot;&gt;C{{ cycle_number }} late&lt;/span&gt;
+{%- else -%}
+  &lt;span class=&quot;label label--small&quot;&gt;C{{ cycle_number }}&lt;/span&gt;
+{%- endif -%}
+{% endtemplate %}
+</pre>
+  </div>
+</div>
+<!-- /sync:markup -->
 </div>
 
 <h2>Features</h2>
 <ul style="list-style: none; margin-left: 0;">
-  <li style="margin: 15px 0;">• Shows issues from current and past cycles</li>
-  <li style="margin: 15px 0;">• Priority badges for urgent and high-priority items</li>
-  <li style="margin: 15px 0;">• Cycle status indicators (● current, ◄ past, ► future)</li>
-  <li style="margin: 15px 0;">• Smart sorting by cycle number and priority</li>
-  <li style="margin: 15px 0;">• Clean typography optimized for e-ink displays</li>
-  <li style="margin: 15px 0;">• Auto-refreshes every 15 minutes</li>
+  <li style="margin: 15px 0;">• Open issues from the current cycle, plus anything carried over from past cycles</li>
+  <li style="margin: 15px 0;">• Oldest cycle first, then Urgent and High</li>
+  <li style="margin: 15px 0;">• Counts for open, carried over and urgent</li>
+  <li style="margin: 15px 0;">• A layout built for each screen size: full, half horizontal, half vertical and quadrant</li>
+  <li style="margin: 15px 0;">• Built on the TRMNL framework only, so it reads cleanly on 1-bit screens</li>
+  <li style="margin: 15px 0;">• Your API key is sent as a header, never in the URL</li>
 </ul>
 
 <footer>
@@ -556,7 +650,7 @@ API Key: {{ trmnl.plugin_settings.custom_fields_values.linear_api_key }}
   </p>
   <p style="margin-top: 20px;">
     <a href="https://github.com/joshsorenson/sqd-trml-plugins" target="_blank">GitHub</a> ·
-    <a href="https://usetrmnl.com" target="_blank">TRMNL</a> ·
+    <a href="https://trmnl.com" target="_blank">TRMNL</a> ·
     <a href="https://linear.app" target="_blank">Linear</a>
   </p>
   <p style="margin-top: 10px;">MIT License</p>
@@ -574,55 +668,10 @@ function copyToClipboard(text, button) {
   });
 }
 
-function copyLiquidTemplate(button) {
-  const template = document.getElementById('liquid-template').textContent;
-  const decoded = template
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&');
-  
-  navigator.clipboard.writeText(decoded).then(() => {
-    button.textContent = 'Copied!';
-    button.classList.add('copied');
-    setTimeout(() => {
-      button.textContent = 'Copy All';
-      button.classList.remove('copied');
-    }, 2000);
-  });
-}
-
-function copyFormFields(button) {
-  const formFields = `- keyname: linear_api_key
-  field_type: password
-  name: Linear API Key
-  description: Your personal Linear API key
-  help_text: Get your API key from <a href="https://linear.app/settings/api" target="_blank">Linear Settings</a>
-
-- keyname: max_issues
-  field_type: number
-  name: Maximum Issues to Display
-  description: How many issues should be shown
-  default: 15
-  min: 5
-  max: 30
-  optional: true
-
-- keyname: author_info
-  name: About This Plugin
-  field_type: author_bio
-  description: Linear Issues plugin displays your current and past cycle tasks. Built by Josh Sorenson, VP of Systems at Church Media Squad.
-  github_url: https://github.com/joshsorenson/sqd-trml-plugins
-  learn_more_url: https://trml-plugins.vercel.app/linear`;
-  
-  navigator.clipboard.writeText(formFields).then(() => {
-    button.textContent = 'Copied!';
-    button.classList.add('copied');
-    setTimeout(() => {
-      button.textContent = 'Copy';
-      button.classList.remove('copied');
-    }, 2000);
-  });
+function copyBlock(id, button) {
+  // textContent is already unescaped, so it copies exactly what's in src/
+  const text = document.getElementById(id).textContent;
+  copyToClipboard(text, button);
 }
 </script>
 

@@ -1,0 +1,52 @@
+{%- comment -%}
+  Half vertical (400x480): narrow column. Three counts across the top, top 6 issues stacked below.
+{%- endcomment -%}
+{% if issues and issues.size > 0 %}
+<div class="layout layout--col layout--top gap">
+  <div class="grid grid--cols-3 w--full">
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content">
+        <span class="value value--small value--tnums">{{ issue_count }}</span>
+        <span class="label label--small">Open</span>
+      </div>
+    </div>
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content">
+        <span class="value value--small value--tnums">{{ past_count | default: 0 }}</span>
+        <span class="label label--small">Late</span>
+      </div>
+    </div>
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content">
+        <span class="value value--small value--tnums">{{ urgent_count | default: 0 }}</span>
+        <span class="label label--small">Urgent</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="flex flex--col gap w--full">
+    {% for issue in issues limit: 6 %}
+    <div class="item">
+      <div class="meta"></div>
+      <div class="content">
+        <span class="title title--small">{{ issue.title | truncate: 60 }}</span>
+        <div class="flex flex--row gap--xsmall">
+          <span class="label label--small">{{ issue.identifier }}</span>
+          {% render "priority_label", priority: issue.priority %}
+          {% render "cycle_label", cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+  {% render "empty_state", error: error, details: details %}
+{% endif %}
+
+{% render "title_bar", logo: linear_logo, instance: instance_label %}

@@ -1,0 +1,27 @@
+{%- comment -%}
+  Quadrant (400x240): a glance. Just the top 3 issues, most overdue and urgent first.
+{%- endcomment -%}
+{% if issues and issues.size > 0 %}
+<div class="layout">
+  <div class="columns">
+    <div class="column">
+      {% for issue in issues limit: 3 %}
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="title title--small">{{ issue.title | truncate: 38 }}</span>
+          <div class="flex flex--row gap--xsmall">
+            <span class="label label--small">{{ issue.identifier }}</span>
+            {% render "priority_label", priority: issue.priority %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% else %}
+  {% render "empty_state", error: error, details: details %}
+{% endif %}
+
+{% render "title_bar", logo: linear_logo, instance: instance_label %}

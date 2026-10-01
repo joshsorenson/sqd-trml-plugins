@@ -1,0 +1,74 @@
+{%- comment -%}
+  Full (800x480): issue table on the left 5/6, summary numbers on the right 1/6.
+{%- endcomment -%}
+{% if issues and issues.size > 0 %}
+{%- comment -%}
+  11 single-line rows is what fits. We cap rows ourselves instead of using the
+  table-limit engine, because its "and N more" text is gray and breaks up on 1-bit.
+{%- endcomment -%}
+{%- assign full_rows = max_issues | at_most: 11 -%}
+{%- assign hidden_count = issues.size | minus: full_rows -%}
+<div class="layout layout--top">
+  <div class="grid gap--large h--full w--full">
+    <div class="col--span-10 h--full">
+      <div class="flex flex--col flex--left gap--small w--full">
+      <table class="table table--small w--full">
+        <thead>
+          <tr>
+            <th class="w--16"><span class="title title--small">ID</span></th>
+            <th class="w--16"><span class="title title--small">Pri</span></th>
+            <th><span class="title title--small">Issue</span></th>
+            <th class="w--20"><span class="title title--small">Status</span></th>
+            <th class="w--16"><span class="title title--small">Cycle</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues limit: full_rows %}
+          <tr>
+            <td><span class="label label--small">{{ issue.identifier }}</span></td>
+            <td>{% render "priority_label", priority: issue.priority %}</td>
+            <td><span class="label">{{ issue.title | truncate: 42 }}</span></td>
+            <td><span class="label label--small">{{ issue.status | truncate: 12 }}</span></td>
+            <td>{% render "cycle_label", cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if hidden_count > 0 %}
+        <span class="label label--small">+{{ hidden_count }} more in Linear</span>
+      {% endif %}
+      </div>
+    </div>
+
+    <div class="col--span-2">
+      <div class="flex flex--col gap--large">
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="value value--large value--tnums" data-fit-value="true">{{ issue_count }}</span>
+            <span class="label">Open</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="value value--large value--tnums" data-fit-value="true">{{ past_count | default: 0 }}</span>
+            <span class="label">Carried over</span>
+          </div>
+        </div>
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="value value--large value--tnums" data-fit-value="true">{{ urgent_count | default: 0 }}</span>
+            <span class="label">Urgent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+  {% render "empty_state", error: error, details: details %}
+{% endif %}
+
+{% render "title_bar", logo: linear_logo, instance: instance_label %}

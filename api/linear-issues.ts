@@ -1,5 +1,11 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { LinearClient } from '@linear/sdk';
+
+const LINEAR_API_URL = 'https://api.linear.app/graphql';
+
+// Linear caps a single page at 250. Nobody's screen shows more than 30.
+const MAX_ISSUES_FETCHED = 100;
+
+type CycleStatus = 'current' | 'past';
 
 interface LinearIssue {
   id: string;
@@ -8,9 +14,11 @@ interface LinearIssue {
   priority: number;
   priorityLabel: string;
   status: string;
+  statusType: string;
   url: string;
-  cycleNumber?: number;
-  cycleStatus?: 'current' | 'past' | 'future';
+  teamKey: string;
+  cycleNumber: number;
+  cycleStatus: CycleStatus;
   dueDate?: string;
   labels: string[];
 }
@@ -18,197 +26,142 @@ interface LinearIssue {
 interface TRMNLResponse {
   issues: LinearIssue[];
   total_count: number;
+  current_count: number;
+  past_count: number;
+  urgent_count: number;
+  in_progress_count: number;
   current_cycle?: number;
   updated_at: string;
   user_name: string;
 }
 
+interface GraphQLIssueNode {
+  id: string;
+  identifier: string;
+  title: string;
+  priority: number;
+  priorityLabel: string;
+  url: string;
+  dueDate: string | null;
+  state: { name: string; type: string } | null;
+  labels: { nodes: { name: string }[] };
+  team: { key: string; activeCycle: { number: number } | null };
+  cycle: { number: number } | null;
+}
+
+interface GraphQLResponse {
+  data?: {
+    viewer: {
+      name: string;
+      assignedIssues: { nodes: GraphQLIssueNode[] };
+    };
+  };
+  errors?: { message: string }[];
+}
+
+// One round trip for everything. The old version made 4 extra calls per issue
+// plus a full cycle list per team, which ran into the 10s function limit.
+const ISSUES_QUERY = `
+  query TrmnlLinearIssues($first: Int!) {
+    viewer {
+      name
+      assignedIssues(
+        first: $first
+        filter: {
+          state: { type: { nin: ["completed", "canceled", "duplicate"] } }
+          cycle: { null: false, isFuture: { eq: false } }
+        }
+      ) {
+        nodes {
+          id
+          identifier
+          title
+          priority
+          priorityLabel
+          url
+          dueDate
+          state { name type }
+          labels(first: 5) { nodes { name } }
+          team { key activeCycle { number } }
+          cycle { number }
+        }
+      }
+    }
+  }
+`;
+
 /**
- * Vercel serverless function to fetch Linear issues due in current cycle or earlier
- * This endpoint serves as the polling strategy for TRMNL plugin
- * 
- * Authentication:
- * Provide your Linear API key via one of these methods:
- * 1. X-Linear-API-Key header (recommended)
- * 2. Authorization: Bearer {key} header
- * 3. LINEAR_API_KEY environment variable (fallback)
+ * Polling endpoint for the TRMNL Linear plugin.
+ * Returns open issues assigned to the API key owner in the current or past cycles.
+ *
+ * Authentication (first match wins):
+ * 1. X-Linear-API-Key header (recommended, set via TRMNL polling headers)
+ * 2. Authorization header, with or without "Bearer "
+ * 3. linear_api_key query param (legacy, kept so existing installs keep working)
+ * 4. LINEAR_API_KEY env var (local dev)
  */
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ): Promise<void> {
-  // Only allow GET requests
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
-  try {
-    // Read Linear API key from multiple sources:
-    // 1. Query parameter (for TRMNL form fields)
-    // 2. Header (for direct API calls)
-    // 3. Environment variable (fallback for development)
-    const linearApiKey = 
-      (req.query.linear_api_key as string) ||
-      (req.headers['x-linear-api-key'] as string) || 
-      (req.headers['authorization']?.replace('Bearer ', '') as string) ||
-      process.env.LINEAR_API_KEY;
+  const linearApiKey = readApiKey(req);
+  if (!linearApiKey) {
+    res.status(401).json({
+      error: 'Linear API key required',
+      message: 'Send your Linear API key in the X-Linear-API-Key header',
+    });
+    return;
+  }
 
-    if (!linearApiKey) {
-      res.status(401).json({ 
-        error: 'Linear API key required',
-        message: 'Please provide your Linear API key via query parameter, X-Linear-API-Key header, or Authorization header'
-      });
+  try {
+    const response = await fetch(LINEAR_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Linear personal API keys go in raw, no "Bearer" prefix
+        Authorization: linearApiKey,
+      },
+      body: JSON.stringify({
+        query: ISSUES_QUERY,
+        variables: { first: MAX_ISSUES_FETCHED },
+      }),
+    });
+
+    const payload = (await response.json()) as GraphQLResponse;
+
+    if (!response.ok || payload.errors?.length || !payload.data) {
+      const message = payload.errors?.map((e) => e.message).join('; ') || response.statusText;
+      const status = response.status === 401 || response.status === 403 ? 401 : 502;
+      res.status(status).json({ error: 'Linear API request failed', details: message });
       return;
     }
 
-    const client = new LinearClient({ apiKey: linearApiKey });
+    const { viewer } = payload.data;
+    const issues = viewer.assignedIssues.nodes
+      .map(toTrmnlIssue)
+      .filter((issue): issue is LinearIssue => issue !== null)
+      .sort(compareIssues);
 
-    // Get the current user
-    const viewer = await client.viewer;
-    const userName = viewer.name;
-
-    // Get all teams to fetch current cycles
-    const teams = await client.teams();
-    const teamsList = await teams.nodes;
-
-    // Map to store cycle IDs and their info (number and current status)
-    const cycleInfoMap = new Map<string, { number: number; isCurrent: boolean }>();
-    const currentCycleNumbers = new Map<string, number>(); // team ID -> current cycle number
-
-    // Fetch cycles for all teams
-    for (const team of teamsList) {
-      // Get active (current) cycle
-      const activeCycles = await team.cycles({
-        filter: {
-          isActive: { eq: true },
-        },
-      });
-      const activeCyclesList = await activeCycles.nodes;
-      
-      if (activeCyclesList.length > 0) {
-        const currentCycle = activeCyclesList[0];
-        currentCycleNumbers.set(team.id, currentCycle.number);
-      }
-
-      // Get all cycles to map them
-      const allCycles = await team.cycles();
-      const allCyclesList = await allCycles.nodes;
-
-      for (const cycle of allCyclesList) {
-        const isCurrent = activeCyclesList.some(ac => ac.id === cycle.id);
-        cycleInfoMap.set(cycle.id, { 
-          number: cycle.number, 
-          isCurrent 
-        });
-      }
-    }
-
-    // Fetch issues assigned to current user
-    const issues = await client.issues({
-      filter: {
-        assignee: { id: { eq: viewer.id } },
-        // Exclude completed/cancelled issues
-        state: {
-          type: { nin: ['completed', 'canceled'] },
-        },
-      },
-    });
-
-    const issuesList = await issues.nodes;
-
-    // Filter and format issues
-    const filteredIssues: LinearIssue[] = [];
-
-    for (const issue of issuesList) {
-      const cycle = await issue.cycle;
-      const cycleId = cycle?.id;
-      const cycleInfo = cycleId ? cycleInfoMap.get(cycleId) : undefined;
-
-      // Include issues that:
-      // 1. Have a cycle and it's current or earlier (exclude future cycles)
-      // 2. Exclude backlog items without cycles
-      if (!cycleInfo) {
-        continue; // Skip issues without cycles
-      }
-
-      const state = await issue.state;
-      const labels = await issue.labels();
-      const labelsList = await labels.nodes;
-      const team = await issue.team;
-      const currentCycleNumber = currentCycleNumbers.get(team.id);
-
-      // Determine cycle status and filter out future cycles
-      let cycleStatus: 'current' | 'past' | 'future' = 'current';
-      if (cycleInfo.isCurrent) {
-        cycleStatus = 'current';
-      } else if (currentCycleNumber) {
-        // Compare cycle numbers to determine if past or future
-        if (cycleInfo.number > currentCycleNumber) {
-          continue; // Skip future cycles
-        } else if (cycleInfo.number < currentCycleNumber) {
-          cycleStatus = 'past';
-        }
-        // If cycleInfo.number === currentCycleNumber but isCurrent is false,
-        // it might be a race condition, but we'll treat it as current
-      } else {
-        // No current cycle found for this team - treat as past cycle
-        cycleStatus = 'past';
-      }
-
-      // Only include current and past cycles (future cycles already skipped above)
-      filteredIssues.push({
-        id: issue.id,
-        identifier: issue.identifier,
-        title: issue.title,
-        priority: issue.priority,
-        priorityLabel: issue.priorityLabel,
-        status: state?.name || 'No Status',
-        url: issue.url,
-        cycleNumber: cycleInfo.number,
-        cycleStatus: cycleStatus,
-        dueDate: issue.dueDate?.toString(),
-        labels: labelsList.map((label: { name: string }) => label.name),
-      });
-    }
-
-    // Sort by cycle number (lower/earlier first), then by priority (urgent first)
-    filteredIssues.sort((a, b) => {
-      // First, sort by cycle number (lower cycles first)
-      const cycleA = a.cycleNumber || 999; // Issues without cycles go to bottom
-      const cycleB = b.cycleNumber || 999;
-      
-      if (cycleA !== cycleB) {
-        return cycleA - cycleB;
-      }
-      
-      // If same cycle, sort by priority
-      // Priority 0 = No priority (should be last)
-      // Priority 1 = Urgent (should be first)
-      // Priority 2 = High, 3 = Normal, 4 = Low
-      const priorityA = a.priority === 0 ? 999 : a.priority;
-      const priorityB = b.priority === 0 ? 999 : b.priority;
-      
-      return priorityA - priorityB;
-    });
-
-    // Get current cycle number (from first team for simplicity)
-    const currentCycleNum = currentCycleNumbers.size > 0 
-      ? Array.from(currentCycleNumbers.values())[0] 
-      : undefined;
-
-    // Return data at root level for TRMNL (not wrapped in merge_variables)
-    const response = {
-      issues: filteredIssues,
-      total_count: filteredIssues.length,
-      current_cycle: currentCycleNum,
+    const body: TRMNLResponse = {
+      issues,
+      total_count: issues.length,
+      current_count: issues.filter((i) => i.cycleStatus === 'current').length,
+      past_count: issues.filter((i) => i.cycleStatus === 'past').length,
+      urgent_count: issues.filter((i) => i.priority === 1).length,
+      in_progress_count: issues.filter((i) => i.statusType === 'started').length,
+      current_cycle: mostCommonActiveCycle(viewer.assignedIssues.nodes),
       updated_at: new Date().toISOString(),
-      user_name: userName,
+      user_name: viewer.name,
     };
 
-    // Set cache headers (refresh every 15 minutes)
-    res.setHeader('Cache-Control', 's-maxage=900, stale-while-revalidate');
-    res.status(200).json(response);
+    // Keys differ per user, so never share a cached response between them
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.status(200).json(body);
   } catch (error) {
     console.error('Error fetching Linear issues:', error);
     res.status(500).json({
@@ -218,3 +171,76 @@ export default async function handler(
   }
 }
 
+function readApiKey(req: VercelRequest): string | undefined {
+  const header = req.headers['x-linear-api-key'];
+  const auth = req.headers['authorization'];
+  const query = req.query.linear_api_key;
+
+  const raw =
+    (Array.isArray(header) ? header[0] : header) ||
+    auth?.replace(/^Bearer\s+/i, '') ||
+    (Array.isArray(query) ? query[0] : query) ||
+    process.env.LINEAR_API_KEY;
+
+  return raw?.trim() || undefined;
+}
+
+function toTrmnlIssue(node: GraphQLIssueNode): LinearIssue | null {
+  if (!node.cycle) return null;
+
+  const activeNumber = node.team.activeCycle?.number;
+  // Belt and braces: the query already drops future cycles
+  if (activeNumber !== undefined && node.cycle.number > activeNumber) return null;
+
+  // A team with no active cycle right now means every cycle is behind us
+  const cycleStatus: CycleStatus = node.cycle.number === activeNumber ? 'current' : 'past';
+
+  return {
+    id: node.id,
+    identifier: node.identifier,
+    title: stripEmoji(node.title),
+    priority: node.priority,
+    priorityLabel: node.priorityLabel,
+    status: node.state?.name || 'No Status',
+    statusType: node.state?.type || 'unstarted',
+    url: node.url,
+    teamKey: node.team.key,
+    cycleNumber: node.cycle.number,
+    cycleStatus,
+    dueDate: node.dueDate || undefined,
+    labels: node.labels.nodes.map((label) => label.name),
+  };
+}
+
+// E-ink has no emoji font, so "⚡️ Request" would render as a box plus "Request"
+function stripEmoji(text: string): string {
+  return text
+    .replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Oldest cycle first (overdue work floats up), then Urgent > High > Normal > Low > None
+function compareIssues(a: LinearIssue, b: LinearIssue): number {
+  if (a.cycleNumber !== b.cycleNumber) return a.cycleNumber - b.cycleNumber;
+  const rank = (p: number) => (p === 0 ? 99 : p);
+  return rank(a.priority) - rank(b.priority);
+}
+
+// Issues can span teams with different cycle numbers. Show the one most of them share.
+function mostCommonActiveCycle(nodes: GraphQLIssueNode[]): number | undefined {
+  const counts = new Map<number, number>();
+  for (const node of nodes) {
+    const n = node.team.activeCycle?.number;
+    if (n !== undefined) counts.set(n, (counts.get(n) || 0) + 1);
+  }
+  let best: number | undefined;
+  let bestCount = 0;
+  for (const [n, count] of counts) {
+    if (count > bestCount) {
+      best = n;
+      bestCount = count;
+    }
+  }
+  return best;
+}

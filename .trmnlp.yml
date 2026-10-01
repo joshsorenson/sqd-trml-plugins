@@ -1,0 +1,41 @@
+# Local preview config for `trmnlp serve`. Not uploaded to TRMNL.
+# The sample data below stands in for /api/linear-issues so the
+# layouts render without a Linear key. Delete `variables` and set
+# LINEAR_API_KEY in your shell to preview against your real issues.
+---
+watch:
+  - .trmnlp.yml
+  - src
+
+custom_fields:
+  linear_api_key: "{{ env.LINEAR_API_KEY }}"
+  max_issues: 11
+
+variables:
+  trmnl:
+    plugin_settings:
+      instance_name: Linear
+  total_count: 15
+  current_count: 12
+  past_count: 3
+  urgent_count: 2
+  in_progress_count: 3
+  current_cycle: 42
+  user_name: Sample User
+  updated_at: "2026-10-01T15:00:00Z"
+  issues:
+    - { identifier: ENG-412, title: Checkout form drops submissions with legacy account ids, priority: 1, priorityLabel: Urgent, status: In Progress, statusType: started, cycleNumber: 40, cycleStatus: past, teamKey: ENG }
+    - { identifier: ENG-398, title: Backfill account ids on old project rows, priority: 2, priorityLabel: High, status: Todo, statusType: unstarted, cycleNumber: 40, cycleStatus: past, teamKey: ENG }
+    - { identifier: ENG-405, title: Scheduler ignores out-of-office days, priority: 3, priorityLabel: Normal, status: In Review, statusType: started, cycleNumber: 41, cycleStatus: past, teamKey: ENG }
+    - { identifier: ENG-431, title: Dashboard badge count lags behind source, priority: 1, priorityLabel: Urgent, status: In Progress, statusType: started, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-433, title: Asset importer skips nested folders, priority: 2, priorityLabel: High, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-437, title: Add dry-run flag to the uploader, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-440, title: Health check misses missing deploy bundles, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-444, title: Changelog template copy pass, priority: 4, priorityLabel: Low, status: Backlog, statusType: backlog, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-447, title: Clean up stale preview env vars, priority: 0, priorityLabel: No priority, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-450, title: Extra sample issue number 0 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-451, title: Extra sample issue number 1 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-452, title: Extra sample issue number 2 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-453, title: Extra sample issue number 3 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-454, title: Extra sample issue number 4 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }
+    - { identifier: ENG-455, title: Extra sample issue number 5 to test how a long list overflows the screen, priority: 3, priorityLabel: Normal, status: Todo, statusType: unstarted, cycleNumber: 42, cycleStatus: current, teamKey: ENG }

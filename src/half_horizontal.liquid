@@ -1,0 +1,44 @@
+{%- comment -%}
+  Half horizontal (800x240): one shallow strip. Count on the left, top 4 issues in a 2x2 grid.
+  Fixed counts instead of the overflow engine, which can't measure height inside a grid cell.
+{%- endcomment -%}
+{% if issues and issues.size > 0 %}
+<div class="layout">
+  <div class="grid gap--large">
+    <div class="col--span-2">
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="value value--large value--tnums" data-fit-value="true">{{ issue_count }}</span>
+          <span class="label">Open</span>
+          {% if past_count > 0 %}
+            <span class="label label--small label--underline">{{ past_count }} late</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col--span-10">
+      <div class="grid grid--cols-2 gap">
+        {% for issue in issues limit: 4 %}
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="title title--small">{{ issue.title | truncate: 34 }}</span>
+            <div class="flex flex--row gap--xsmall">
+              <span class="label label--small">{{ issue.identifier }}</span>
+              {% render "priority_label", priority: issue.priority %}
+              {% render "cycle_label", cycle_status: issue.cycleStatus, cycle_number: issue.cycleNumber %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+  {% render "empty_state", error: error, details: details %}
+{% endif %}
+
+{% render "title_bar", logo: linear_logo, instance: instance_label %}

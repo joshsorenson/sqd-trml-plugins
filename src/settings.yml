@@ -1,0 +1,38 @@
+#
+# Uploaded to TRMNL by `trmnlp push`. Add the plugin's `id:` here before pushing,
+# otherwise trmnlp creates a new plugin instead of updating the existing one.
+#
+---
+name: Linear Issues
+description: Open issues, this cycle and late
+strategy: polling
+polling_verb: get
+polling_url: https://trml-plugins.vercel.app/api/linear-issues
+polling_headers: x-linear-api-key={{ linear_api_key }}
+polling_body: ''
+static_data: ''
+no_screen_padding: 'no'
+dark_mode: 'no'
+framework_version: latest
+refresh_interval: 15
+custom_fields:
+- keyname: linear_api_key
+  field_type: password
+  name: Linear API Key
+  description: Your personal Linear API key
+  help_text: Create one in <a href="https://linear.app/settings/account/security" target="_blank">Linear Settings, Security and access</a>. It's sent as a header, never in the URL.
+- keyname: max_issues
+  field_type: number
+  name: Maximum Issues
+  description: Most issues to show on the full layout
+  default: 11
+  min: 3
+  max: 11
+  optional: true
+  help_text: Between 3 and 11. Anything past that shows as "+N more". Smaller layouts show fewer so text stays readable.
+- keyname: author_info
+  name: About This Plugin
+  field_type: author_bio
+  category: productivity
+  description: Shows your open Linear issues from the current and past cycles, oldest and most urgent first. Built by Josh Sorenson, VP of Systems at Church Media Squad.
+  learn_more_url: https://trml-plugins.vercel.app/linear

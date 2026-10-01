@@ -1,251 +1,134 @@
 # TRMNL Linear Issues Plugin
 
-A TRMNL plugin that displays Linear issues assigned to you that are due in the current cycle or earlier.
+Shows your open Linear issues on a TRMNL e-ink display. You get everything in the current cycle plus anything carried over from past cycles, oldest cycle first, then Urgent and High.
 
-## Features
+Built to TRMNL's own design rules ([usetrmnl/trmnl-agent-skills](https://github.com/usetrmnl/trmnl-agent-skills)): framework classes only, no custom CSS, a layout tailored to each screen size, and nothing that breaks up on 1-bit screens.
 
-- 📋 Shows issues from current cycle and earlier cycles
-- 🔴 Priority-based color coding (Urgent/High priority badges)
-- 🏷️ Displays status and cycle information
-- 📅 Shows cycle numbers with status indicators (current/past/future)
-- ♻️ Auto-refreshes every 15 minutes
-- ✨ Clean, modern UI optimized for e-ink displays
-- 📊 Responsive layouts for full-screen, half-screen, and quadrant views
-- ⚙️ Configurable maximum number of issues to display
+## Use it
 
-## Setup
+1. Create a Linear personal API key in [Linear Settings, Security and access](https://linear.app/settings/account/security).
+2. Add the [Linear Issues recipe](https://trmnl.com/recipes/182427) in TRMNL and paste the key into the form.
 
-### For Plugin Users (Easiest Method)
+Setting it up by hand instead? The guide at [trml-plugins.vercel.app/linear](https://trml-plugins.vercel.app/linear) has every value to copy.
 
-If someone has already deployed this plugin, you just need your Linear API key:
+## How it works
 
-1. **Get Your Linear API Key**
-   - Go to [Linear Settings > API](https://linear.app/settings/api)
-   - Create a new Personal API Key
-   - Copy the key
-
-2. **Add Plugin to TRMNL**
-   - Go to [TRMNL Plugins](https://usetrmnl.com/plugins) or use the [Linear Issues Recipe](https://usetrmnl.com/recipes/182427)
-   - Find "Linear Issues - Current Cycle" (or use the shared plugin URL)
-   - Click "Add to my TRMNL"
-   - Enter your Linear API key in the plugin settings form field
-   - Optionally configure the maximum number of issues to display (default: 15)
-   - Save and activate!
-
-### For Plugin Developers (Deploy Your Own)
-
-If you want to host your own instance:
-
-#### 1. Get Your Linear API Key
-
-1. Go to [Linear Settings > API](https://linear.app/settings/api)
-2. Create a new Personal API Key  
-3. Copy the key (users will configure it in TRMNL, not in Vercel)
-
-#### 2. Deploy to Vercel
-
-```bash
-# Install dependencies
-npm install
-
-# Login to Vercel (if not already logged in)
-npx vercel login
-
-# Deploy to Vercel
-npx vercel --prod
+```
+TRMNL polls  GET /api/linear-issues  (header: x-linear-api-key)
+             -> one Linear GraphQL query
+             -> JSON below
+             -> src/*.liquid renders it
 ```
 
-#### 3. Get Your Polling URL
+| Path | What it is |
+|---|---|
+| `api/linear-issues.ts` | Vercel function TRMNL polls. One GraphQL round trip to Linear. |
+| `src/full.liquid` | 800x480. Issue table plus open, carried over and urgent counts. |
+| `src/half_horizontal.liquid` | 800x240. Open count plus top 4 issues in a 2x2 grid. |
+| `src/half_vertical.liquid` | 400x480. Three counts on top, top 6 issues stacked. |
+| `src/quadrant.liquid` | 400x240. Top 3 issues. |
+| `src/shared.liquid` | Logo, title bar, empty state and label partials used by every size. |
+| `src/settings.yml` | Polling config and form fields, in the format `trmnlp push` uploads. |
+| `.trmnlp.yml` | Local preview config with sample data. Not uploaded. |
+| `public/` | Landing page and setup guide served by Vercel. |
+| `scripts/sync-guide.py` | Copies `src/` into the setup guide's copy blocks. |
 
-After deployment, Vercel will give you a URL like:
-
-```text
-https://your-project.vercel.app/api/linear-issues
-```
-
-This is your polling URL for TRMNL.
-
-#### 4. Create Plugin on TRMNL
-
-1. Go to [TRMNL Plugins](https://usetrmnl.com/plugins)
-2. Click "Create Private Plugin" (or "Create Public Plugin" to share)
-3. Fill in the details:
-   - **Name**: Linear Issues - Current Cycle
-   - **Strategy**: Polling
-   - **Polling URL**: Your Vercel URL from step 3
-   - **Refresh Interval**: 15 minutes (or your preference)
-4. Upload the `linear.liquid` file as the markup template
-5. Upload the `form-fields.yaml` file to configure the plugin form fields
-6. Save the plugin
-7. When users add your plugin, they'll be prompted to enter their Linear API key and optionally configure the maximum number of issues
-
-## Data Structure
-
-The API endpoint returns data in this format:
+### API response
 
 ```json
 {
   "issues": [
     {
-      "id": "issue-id",
-      "identifier": "SIS-810",
-      "title": "Issue title",
+      "identifier": "ENG-412",
+      "title": "Checkout form drops submissions",
       "priority": 1,
       "priorityLabel": "Urgent",
       "status": "In Progress",
+      "statusType": "started",
+      "cycleNumber": 40,
+      "cycleStatus": "past",
+      "teamKey": "ENG",
       "url": "https://linear.app/...",
-      "cycleNumber": 4,
-      "cycleStatus": "current",
-      "dueDate": "2025-11-20",
-      "labels": ["Bug", "Feature"]
+      "dueDate": "2026-10-03",
+      "labels": ["Bug"]
     }
   ],
-  "total_count": 5,
-  "current_cycle": 4,
-  "updated_at": "2025-11-17T10:00:00Z",
-  "user_name": "Your Name"
+  "total_count": 9,
+  "current_count": 6,
+  "past_count": 3,
+  "urgent_count": 2,
+  "in_progress_count": 3,
+  "current_cycle": 42,
+  "updated_at": "2026-10-01T15:00:00.000Z",
+  "user_name": "Sample User"
 }
 ```
 
-### Issue Priority Values
+Rules the API applies:
 
-- `0`: No priority
-- `1`: Urgent (displayed with black badge)
-- `2`: High (displayed with gray badge)
-- `3`: Normal
-- `4`: Low
+- Only issues assigned to the key's owner.
+- Skips completed, canceled and duplicate states.
+- Skips issues with no cycle, and issues in future cycles.
+- Strips emoji from titles. E-ink has no emoji font, so they'd render as empty boxes.
 
-### Cycle Status Values
+### Auth
 
-- `current`: Issue is in the current active cycle
-- `past`: Issue is in a cycle that has ended
-- `future`: Issue is in a future cycle
+The API reads the Linear key from, in order: the `x-linear-api-key` header, the `Authorization` header (with or without `Bearer`), the `linear_api_key` query param, then the `LINEAR_API_KEY` env var.
 
-## Customization
+Use the header. The query param only exists so older installs that put the key in the polling URL keep working.
 
-### Modify Issue Filtering
+## Develop
 
-Edit `api/linear-issues.ts` to change which issues are included:
-
-- Currently includes: Issues assigned to you that have a cycle (current, past, or future)
-- Excludes: Completed and cancelled issues, backlog items without cycles
-- Issues are sorted by cycle number (earlier cycles first), then by priority (urgent first)
-
-### Adjust Display Count
-
-The plugin supports a configurable maximum number of issues via the `max_issues` form field (default: 15). Users can set this between 5-30 issues in the plugin settings.
-
-The `linear.liquid` template uses this value:
-
-- Full-screen view: Shows up to `max_issues` (default 15)
-- Compact views (half-screen/quadrant): Shows fewer items based on view size
-
-To change the default, edit `form-fields.yaml`:
-
-```yaml
-- keyname: max_issues
-  default: 15  # Change this value
-```
-
-### Change Priority Colors
-
-Edit the CSS in `linear.liquid`:
-
-```css
-.priority-1 { 
-  background: #000;  /* Urgent - Black */
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
-}
-.priority-2 { 
-  background: #666;  /* High - Dark Gray */
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
-}
-.priority-3 { background: #999; }  /* Normal - Medium Gray */
-.priority-4 { background: #ccc; }   /* Low - Light Gray */
-```
-
-### View-Specific Display Limits
-
-The template automatically limits items based on view size:
-
-- Quadrant view: Shows up to 2 issues
-- Half-screen views: Shows up to 5 issues
-- Full-screen view: Shows up to `max_issues` (default 15)
-
-## Development
+Preview the layouts locally with [trmnlp](https://github.com/usetrmnl/trmnlp), TRMNL's dev server. It needs Ruby 3.4 or newer.
 
 ```bash
-# Install dependencies
-npm install
-
-# Run locally with Vercel CLI
-npx vercel dev
-
-# Test the endpoint (replace YOUR_LINEAR_API_KEY with your actual key)
-curl -H "X-Linear-API-Key: YOUR_LINEAR_API_KEY" http://localhost:3000/api/linear-issues
+brew install ruby
 ```
 
-## Troubleshooting
+```bash
+/opt/homebrew/opt/ruby/bin/gem install trmnl_preview
+```
 
-### No issues showing up
+```bash
+trmnlp serve
+```
 
-1. Check that you have issues assigned to you in Linear
-2. Verify issues have a cycle assigned (backlog items without cycles are excluded)
-3. Make sure issues aren't marked as completed/cancelled
-4. Ensure issues are assigned to you (not just watching them)
+Open http://localhost:4567. It renders the sample data in `.trmnlp.yml` and reloads when `src/` changes. If trmnlp crashes with `invalid byte sequence in US-ASCII`, run it with `LANG=en_US.UTF-8`.
 
-### API errors
+Check the templates against TRMNL's rules before pushing:
 
-1. Verify your Linear API key is correct (test it in Linear's API console)
-2. Make sure your Linear API key is entered correctly in the TRMNL plugin form fields
-3. Check the Vercel function logs for detailed error messages
-4. Test the API endpoint directly:
+```bash
+trmnlp lint
+```
 
-   ```bash
-   # Using query parameter
-   curl "https://your-project.vercel.app/api/linear-issues?linear_api_key=YOUR_KEY"
-   
-   # Using header
-   curl -H "X-Linear-API-Key: YOUR_KEY" https://your-project.vercel.app/api/linear-issues
-   ```
+After changing anything in `src/`, refresh the setup guide:
 
-### Display issues
+```bash
+python3 scripts/sync-guide.py
+```
 
-1. Make sure the TRMNL plugin is activated
-2. Check that the polling URL is correct
-3. Verify the refresh interval settings
+Run the API locally:
+
+```bash
+npm install
+```
+
+```bash
+npx vercel dev
+```
+
+```bash
+curl -H "x-linear-api-key: $LINEAR_API_KEY" http://localhost:3000/api/linear-issues
+```
+
+## Publish markup changes to TRMNL
+
+Pushing to GitHub redeploys the API on Vercel. It does not update the markup in TRMNL. To push `src/` to the recipe:
+
+1. Add the plugin's `id:` to the top of `src/settings.yml`. Without it, `trmnlp push` creates a new plugin.
+2. Run `trmnlp login` once with your TRMNL API key.
+3. Run `trmnlp push`.
 
 ## License
 
 MIT
-
-## Project Structure
-
-```text
-trml plugins/
-├── api/
-│   └── linear-issues.ts      # Vercel serverless function (API endpoint)
-├── linear.liquid             # TRMNL markup template
-├── form-fields.yaml          # Plugin form field definitions
-├── package.json              # Node.js dependencies
-├── vercel.json              # Vercel configuration
-└── README.md                # This file
-```
-
-## API Authentication
-
-The API endpoint accepts Linear API keys via multiple methods (in order of precedence):
-
-1. Query parameter: `?linear_api_key=YOUR_KEY`
-2. Header: `X-Linear-API-Key: YOUR_KEY`
-3. Authorization header: `Authorization: Bearer YOUR_KEY`
-4. Environment variable: `LINEAR_API_KEY` (for development only)
-
-## Support
-
-For issues or questions:
-
-- [Linear Issues Recipe on TRMNL](https://usetrmnl.com/recipes/182427) - Direct link to add the plugin
-- Check the [TRMNL Documentation](https://usetrmnl.com/docs)
-- Review [Linear API Docs](https://developers.linear.app/)
-- Plugin repository: [GitHub](https://github.com/joshsorenson/sqd-trml-plugins)
